@@ -1,4 +1,4 @@
-import com.homework.ninedt.data.model.Status
+package com.homework.ninedt.data.api
 
 data class Resource<out T>(val status: Status, val data: T?, val message: String?) {
     companion object {

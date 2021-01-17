@@ -7,7 +7,7 @@ import com.homework.ninedt.data.model.Game
 @Dao
 interface GameDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun createNewGame(game: Game)
 
     @Update
@@ -24,6 +24,9 @@ interface GameDao {
     @Query("SELECT * FROM game where id = :id")
     fun loadGame(id: Long): LiveData<Game>
 
-    @Query("SELECT * from game where active = 1")
+    @Query("SELECT * FROM game WHERE status = 'INPROGRESS' ORDER BY createdDate DESC LIMIT 1")
     fun loadActiveGame(): LiveData<Game>
+
+    @Query("SELECT EXISTS(SELECT * from game where status = 'INPROGRESS')")
+    fun hasActiveGame(): LiveData<Boolean>
 }

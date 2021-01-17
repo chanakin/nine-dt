@@ -1,4 +1,4 @@
-package com.homework.ninedt.data.model
+package com.homework.ninedt.data.api
 
 enum class Status {
     SUCCESS,
