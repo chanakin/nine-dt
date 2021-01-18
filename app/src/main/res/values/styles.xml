@@ -8,12 +8,11 @@
     </style>
 
     <style name="TokenView">
-       <item name="layout_constraintHorizontal_chainStyle">packed</item>
-       <item name="layout_constraintVertical_chainStyle">packed</item>
+        <item name="layout_constraintHorizontal_chainStyle">packed</item>
+        <item name="layout_constraintVertical_chainStyle">packed</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">0dp</item>
         <item name="layout_constraintDimensionRatio">1:1</item>
-        <item name="layout_constraintHorizontal_weight">1</item>
         <item name="android:layout_marginVertical">4dp</item>
         <item name="android:elevation">8dp</item>
     </style>
@@ -25,21 +24,11 @@
     <style name="StartTokenView" parent="TokenView">
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginEnd">4dp</item>
-        <item name="layout_constraintStart_toStartOf">parent</item>
     </style>
 
     <style name="EndTokenView" parent="TokenView">
         <item name="android:layout_marginEnd">8dp</item>
         <item name="android:layout_marginStart">4dp</item>
-        <item name="layout_constraintEnd_toEndOf">parent</item>
-    </style>
-
-    <style name="TopTokenView" parent="InnerTokenView">
-        <item name="layout_constraintTop_toTopOf">parent</item>
-    </style>
-
-    <style name="BottomTokenView" parent="InnerTokenView">
-        <item name="layout_constraintBottom_toBottomOf">parent</item>
     </style>
 
 </resources>
