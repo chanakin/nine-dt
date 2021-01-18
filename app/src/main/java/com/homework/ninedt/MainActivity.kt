@@ -6,11 +6,14 @@ import androidx.appcompat.app.AppCompatActivity
 import com.homework.ninedt.ui.main.view.BoardFragment
 import com.homework.ninedt.ui.main.view.StartGameDialogFragment
 import com.homework.ninedt.ui.main.viewmodel.BoardViewModel
+import com.homework.ninedt.ui.main.viewmodel.Injector
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private val boardViewModel: BoardViewModel by viewModels()
+    private val boardViewModel: BoardViewModel by viewModels {
+        Injector.provideBoardViewModelFactory(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

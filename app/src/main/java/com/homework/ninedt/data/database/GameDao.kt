@@ -1,32 +1,32 @@
 package com.homework.ninedt.data.database
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.homework.ninedt.data.model.Game
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GameDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun createNewGame(game: Game)
+    suspend fun createNewGame(game: Game)
 
     @Update
     // Returns number of rows updated
-    fun updateGame(game: Game)
+    suspend fun updateGame(game: Game)
 
     @Delete
     // Returns number of rows deleted
-    fun deleteGame(game: Game)
+    suspend fun deleteGame(game: Game)
 
     @Query("SELECT * FROM game")
-    fun getAllGames(): LiveData<List<Game>>
+    suspend fun getAllGames(): Flow<List<Game>>
 
     @Query("SELECT * FROM game where id = :id")
-    fun loadGame(id: Long): LiveData<Game>
+    suspend fun loadGame(id: Long): Flow<Game>
 
-    @Query("SELECT * FROM game WHERE status = 'INPROGRESS' ORDER BY createdDate DESC LIMIT 1")
-    fun loadActiveGame(): LiveData<Game>
+    @Query("SELECT * FROM game ORDER BY lastModified DESC LIMIT 1")
+    fun loadLatestGame(): Flow<Game>
 
-    @Query("SELECT EXISTS(SELECT * from game where status = 'INPROGRESS')")
-    fun hasActiveGame(): LiveData<Boolean>
+//    @Query("SELECT EXISTS(SELECT * from game where status = 'INPROGRESS')")
+//    suspend fun hasActiveGame(): Flow<Boolean>
 }

@@ -11,10 +11,10 @@ import java.util.*
 data class Game(
     @PrimaryKey(autoGenerate = true) var id: Long = 0,
     var moves: Array<Int> = emptyArray(),
-    val status: GameStatus = GameStatus.INPROGRESS,
-    val startingPlayer: Int = 0,
+    var status: GameStatus = GameStatus.INITIALIZED,
+    var startingPlayer: Int = 0,
     val createdDate: Date = Date(),
-    val lastModified: Date = Date(),
+    var lastModified: Date = Date(),
     val gridSize: Int = 4
 ) {
     override fun equals(other: Any?): Boolean {
@@ -33,5 +33,27 @@ data class Game(
         var result = id.hashCode()
         result = 31 * result + moves.contentHashCode()
         return result
+    }
+
+    fun readyToPlay() = startingPlayer != 0
+
+    fun createBoard(): List<MutableList<Int>>? {
+        if (startingPlayer == 0) {
+            return null
+        }
+
+        val board: List<MutableList<Int>> =
+            List(gridSize) { MutableList(gridSize) { 0 } }
+
+        val secondPlayer = if (startingPlayer == 1) 2 else 1
+
+        moves.forEachIndexed { index, columnPlaced ->
+            run {
+                val currentPlayer = if (index % 2 == 0) startingPlayer else secondPlayer
+                board[columnPlaced].add(currentPlayer)
+            }
+        }
+
+        return board
     }
 }
