@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="token_outer_circle">8dp</dimen>
+    <dimen name="token_gradient_radius">60%</dimen>
+</resources>

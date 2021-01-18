@@ -97,7 +97,7 @@ class BoardFragment : Fragment() {
 
         val drawable = when (tokenColor) {
             'R' -> R.drawable.red_token
-            'B' -> R.drawable.blue_token
+            'B' -> R.drawable.yellow_token
             else -> R.drawable.empty_token
         }
 
