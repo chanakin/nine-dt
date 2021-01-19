@@ -23,27 +23,26 @@ class StartGameDialogFragment : DialogFragment() {
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        viewModel.currentPlayer
         return MaterialAlertDialogBuilder(requireContext())
-            .setMessage(R.string.start_game_message)
-            .setTitle(R.string.start_game_dialog_title)
+            .setTitle(R.string.start_game_message)
             .setSingleChoiceItems(
                 R.array.start_game_starting_player_options,
                 0
             ) { _, optionSelected ->
-//                viewModel.setStartingPlayer(
-//                    when (optionSelected) {
-//                        0 -> 0
-//                        1 -> 1
-//                        2 -> Random.nextInt(0, 1)
-//                        else -> 0
-//                    }
-//                )
+                viewModel.setStartingPlayer(
+                    when (optionSelected) {
+                        0 -> 1
+                        1 -> 2
+                        2 -> Random.nextInt(1, 2)
+                        else -> 0
+                    }
+                )
             }
             .setPositiveButton(R.string.start_game_positive_button) { _, _ ->
-//                viewModel.startGame()
+                viewModel.startGame()
                 dismiss()
             }
+            .setCancelable(false)
             .create()
     }
 }

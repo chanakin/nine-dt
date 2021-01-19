@@ -1,6 +1,7 @@
 package com.homework.ninedt
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -19,14 +20,16 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             boardViewModel.game.observe(this, { game ->
-                Toast.makeText(
-                    baseContext,
-                    "Received update for game. Is it ready: ${game?.readyToPlay()}",
-                    Toast.LENGTH_SHORT
-                ).show()
                 if (game == null) {
                     return@observe
                 }
+
+                Log.i("MainActivity", "Game update received $game")
+                Toast.makeText(
+                    baseContext,
+                    "Received update for game. Is it ready: ${game}",
+                    Toast.LENGTH_SHORT
+                ).show()
 
                 if (!game.readyToPlay()) {
                     StartGameDialogFragment().show(

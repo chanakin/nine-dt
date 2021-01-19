@@ -4,17 +4,20 @@ import android.app.Application
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.homework.ninedt.data.model.Game
+import com.homework.ninedt.data.model.GameStatus
 import com.homework.ninedt.data.repository.GameRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 
 class BoardViewModel @ViewModelInject constructor(
     application: Application,
-    repository: GameRepository
+    val repository: GameRepository
 ) : AndroidViewModel(application) {
-    val game: LiveData<Game> = repository.loadActiveGame().asLiveData().distinctUntilChanged()
+    val game: LiveData<Game?> = repository.loadActiveGame().asLiveData().distinctUntilChanged()
 
     val board: LiveData<List<List<Int>>> =
-        Transformations.distinctUntilChanged(game.map { it.createBoard() })
+        Transformations.distinctUntilChanged(game?.map { if (it != null) it.createBoard() else emptyList() })
 
     val startingPlayer: LiveData<Int> = Transformations.map(game) { game.value?.startingPlayer }
 
@@ -31,14 +34,36 @@ class BoardViewModel @ViewModelInject constructor(
         return@map if (it.moves.size % 2 == 0) it.startingPlayer else secondPlayer
     }
 
-//    fun setStartingPlayer(startPlayer: Int) {
-//        val withStartingPlayer = game.value
-//        withStartingPlayer.startingPlayer = startPlayer
-//        repository.updateGame()
-//        game.value.startingPlayer = startPlayer
-//        repository.updateGame()
-//        savedStateHandle.set(STARTING_PLAYER_KEY, startPlayer)
-//    }
+    private var _loading = MutableLiveData(false)
+
+    val loading: LiveData<Boolean> = _loading
+
+    fun setStartingPlayer(startPlayer: Int) {
+        game.value?.let {
+            it.startingPlayer = startPlayer
+            it.status = GameStatus.INPROGRESS
+            viewModelScope.launch(Dispatchers.IO) {
+                repository.updateGame(it)
+            }
+        }
+    }
+
+    fun startGame() {
+        game.value?.let {
+            if (it.readyToPlay()) {
+                it.status = GameStatus.INPROGRESS
+                viewModelScope.launch(Dispatchers.IO) {
+                    repository.updateGame(it)
+
+                    // Did the other player get chosen to start first? If so, we have to ask it for the
+                    // starting move
+                    if (it.startingPlayer != 1) {
+                        repository.getOtherPlayerMove(it)
+                    }
+                }
+            }
+        }
+    }
 
     // I don't love using a hardcoded integer for starting player where 1 is the current user and 2 is the AI.
     // My preference would be to use a User object instead,

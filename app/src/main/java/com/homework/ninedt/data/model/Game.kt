@@ -34,15 +34,23 @@ data class Game(
         return result
     }
 
-    fun readyToPlay() = startingPlayer != 0
+    fun readyToPlay(): Boolean {
+        return startingPlayer != 0 && when (status) {
+            GameStatus.FORFEIT -> false
+            GameStatus.CANCELLED -> false
+            GameStatus.LOST -> false
+            GameStatus.WON -> false
+            else -> true
+        }
+    }
 
     fun createBoard(): List<List<Int>>? {
-        if (startingPlayer == 0) {
-            return null
-        }
-
         val board: List<MutableList<Int>> =
             List(GRID_SIZE) { MutableList(GRID_SIZE) { 0 } }
+
+        if (startingPlayer == 0) {
+            return board
+        }
 
         val secondPlayer = if (startingPlayer == 1) 2 else 1
 

@@ -15,8 +15,8 @@ import javax.inject.Singleton
 class GameRepository @Inject constructor(
     private val gameDao: GameDao,
     private val gameService: NineDTApiService
-): GameDataSource {
-    override fun loadActiveGame(): Flow<Game> {
+) : GameDataSource {
+    override fun loadActiveGame(): Flow<Game?> {
         return gameDao.loadLatestGame()
     }
 
@@ -30,14 +30,18 @@ class GameRepository @Inject constructor(
         gameDao.updateGame(game)
     }
 
-    override suspend fun saveDroppedToken(game: Game, column: Int): Game {
+    override suspend fun getOtherPlayerMove(game: Game) {
+        game.moves = gameService.getNextMove(game.moves)
+        updateGame(game)
+    }
+
+    override suspend fun saveDroppedToken(game: Game, column: Int) {
         val newMoves = game.moves.toMutableList()
         newMoves.add(column)
         game.moves = newMoves.toTypedArray()
         updateGame(game)
         game.moves = gameService.getNextMove(newMoves.toTypedArray())
         updateGame(game)
-        return game
     }
 }
 

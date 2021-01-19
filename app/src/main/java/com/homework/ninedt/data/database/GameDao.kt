@@ -26,7 +26,4 @@ interface GameDao {
 
     @Query("SELECT * FROM game ORDER BY lastModified DESC LIMIT 1")
     fun loadLatestGame(): Flow<Game>
-
-//    @Query("SELECT EXISTS(SELECT * from game where status = 'INPROGRESS')")
-//    suspend fun hasActiveGame(): Flow<Boolean>
 }

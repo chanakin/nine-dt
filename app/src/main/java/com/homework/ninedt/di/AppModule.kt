@@ -65,9 +65,9 @@ object AppModule {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
                         // Initializes the database with the first game
-//                        ioThread {
-//                            provideDatabase(context).gameDao().createNewGame(Game())
-//                        }
+                        ioThread {
+                            provideDatabase(context).gameDao().createNewGame(Game())
+                        }
                     }
                 }
             ).build()
