@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.whenCreated
+import androidx.lifecycle.whenResumed
 import androidx.lifecycle.whenStarted
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.homework.ninedt.R
@@ -14,19 +16,6 @@ import kotlin.random.Random
 
 class StartGameDialogFragment : DialogFragment() {
     private val viewModel: BoardViewModel by activityViewModels()
-
-    init {
-        lifecycleScope.launch {
-            whenStarted {
-
-                viewModel.startingPlayer.observe(viewLifecycleOwner) { newStartingPlayer ->
-                    if (newStartingPlayer == 0) {
-                        show(parentFragmentManager, TAG)
-                    }
-                }
-            }
-        }
-    }
 
     companion object {
         const val TAG = "StartGameDialogFragment"
@@ -42,17 +31,17 @@ class StartGameDialogFragment : DialogFragment() {
                 R.array.start_game_starting_player_options,
                 0
             ) { _, optionSelected ->
-                viewModel.setStartingPlayer(
-                    when (optionSelected) {
-                        0 -> 0
-                        1 -> 1
-                        2 -> Random.nextInt(0, 1)
-                        else -> 0
-                    }
-                )
+//                viewModel.setStartingPlayer(
+//                    when (optionSelected) {
+//                        0 -> 0
+//                        1 -> 1
+//                        2 -> Random.nextInt(0, 1)
+//                        else -> 0
+//                    }
+//                )
             }
             .setPositiveButton(R.string.start_game_positive_button) { _, _ ->
-                viewModel.startGame()
+//                viewModel.startGame()
                 dismiss()
             }
             .create()

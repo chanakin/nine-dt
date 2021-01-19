@@ -14,8 +14,7 @@ data class Game(
     var status: GameStatus = GameStatus.INITIALIZED,
     var startingPlayer: Int = 0,
     val createdDate: Date = Date(),
-    var lastModified: Date = Date(),
-    val gridSize: Int = 4
+    var lastModified: Date = Date()
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -43,7 +42,7 @@ data class Game(
         }
 
         val board: List<MutableList<Int>> =
-            List(gridSize) { MutableList(gridSize) { 0 } }
+            List(GRID_SIZE) { MutableList(GRID_SIZE) { 0 } }
 
         val secondPlayer = if (startingPlayer == 1) 2 else 1
 
@@ -55,5 +54,11 @@ data class Game(
         }
 
         return board
+    }
+
+    companion object {
+        // Hardcoded for now as dynamic building of a grid is a bigger effort to ensure
+        // optimal performance. At least it's not a magic number this way :)
+        const val GRID_SIZE: Int = 4
     }
 }

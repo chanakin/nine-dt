@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/board_layout"
+    android:padding="8dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
@@ -20,7 +21,6 @@
     <ImageView
         android:id="@+id/row_1_column_2"
         style="@style/InnerTokenView"
-        android:layout_marginTop="4dp"
         android:src="@drawable/empty_token"
         app:layout_constraintBottom_toTopOf="@+id/row_2_column_2"
         app:layout_constraintEnd_toStartOf="@+id/row_1_column_3"
@@ -115,7 +115,6 @@
         android:id="@+id/row_3_column_4"
         style="@style/EndTokenView"
         android:src="@drawable/empty_token"
-
         app:layout_constraintBottom_toTopOf="@+id/row_4_column_4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -127,7 +126,6 @@
         android:id="@+id/row_4_column_1"
         style="@style/StartTokenView"
         android:src="@drawable/yellow_token"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/row_4_column_2"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -139,7 +137,6 @@
         android:id="@+id/row_4_column_2"
         style="@style/InnerTokenView"
         android:src="@drawable/yellow_token"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/row_4_column_3"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -151,7 +148,6 @@
         android:id="@+id/row_4_column_3"
         style="@style/InnerTokenView"
         android:src="@drawable/yellow_token"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/row_4_column_4"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -163,7 +159,6 @@
         android:id="@+id/row_4_column_4"
         style="@style/EndTokenView"
         android:src="@drawable/red_token"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_chainStyle="packed"

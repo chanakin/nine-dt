@@ -1,5 +1,6 @@
 package com.homework.ninedt.ui.main.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.*
 import com.homework.ninedt.data.model.Game
 import com.homework.ninedt.data.repository.GameRepository
@@ -7,23 +8,24 @@ import java.util.*
 import androidx.hilt.lifecycle.ViewModelInject
 
 class BoardViewModel @ViewModelInject constructor(
+    application: Application,
     repository: GameRepository
-) : ViewModel() {
+) : AndroidViewModel(application) {
     val game: LiveData<Game> = repository.loadActiveGame().asLiveData()
 
     val startingPlayer: LiveData<Int> = Transformations.map(game) { game.value?.startingPlayer}
 
-    val boardGridSize: LiveData<Int> = Transformations.map(game) { game.value?.gridSize }
-
-    val currentPlayer: LiveData<Int> = Transformations.switchMap(game) { game ->
-        if (game.startingPlayer == 0) {
-            return@switchMap MutableLiveData(0);
+    val currentPlayer: LiveData<Int> = Transformations.map(game) {
+        if (it == null) {
+            return@map 0
         }
 
-        val currentPlayer = MutableLiveData(0)
-        val secondPlayer = if (game.startingPlayer == 1) 2 else 1
-        currentPlayer.value =  if (game.moves.size % 2 == 0) game.startingPlayer else secondPlayer
-        return@switchMap currentPlayer
+        if (it.startingPlayer == 0) {
+            return@map 0
+        }
+
+        val secondPlayer = if (it.startingPlayer == 1) 2 else 1
+        return@map if (it.moves.size % 2 == 0) it.startingPlayer else secondPlayer
     }
 
 //    fun setStartingPlayer(startPlayer: Int) {
@@ -74,15 +76,4 @@ class BoardViewModel @ViewModelInject constructor(
 //        const val MOVES_SS_KEY = "moves"
 //        const val STARTING_PLAYER_KEY = "startingPlayer"
     }
-}
-
-/**
- * Factory for creating a [BoardViewModel] with a constructor that takes a [GameRepository].
- */
-class BoardViewModelFactory (
-    private val repository: GameRepository
-) : ViewModelProvider.NewInstanceFactory() {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>) = BoardViewModel(repository) as T
 }

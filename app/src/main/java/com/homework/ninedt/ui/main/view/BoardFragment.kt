@@ -4,13 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.google.android.material.snackbar.Snackbar
 import com.homework.ninedt.R
 import com.homework.ninedt.databinding.BoardFragmentBinding
 import com.homework.ninedt.ui.main.viewmodel.BoardViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class BoardFragment : Fragment() {
 
     companion object {
@@ -29,66 +31,12 @@ class BoardFragment : Fragment() {
         _binding = BoardFragmentBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        viewModel.boardGridSize.observe(viewLifecycleOwner) { gridSize ->
-            binding.boardLayout.removeAllViews()
-
-            repeat(gridSize * gridSize) {
-                addTokenView(tokenColor = ' ')
-            }
+        viewModel.game.observe(viewLifecycleOwner) { game ->
+            Snackbar.make(binding.root, "Game updated with moves $game.moves", Snackbar.LENGTH_LONG)
+                .show()
         }
 
         return view
-    }
-
-    private fun addRowToGrid(gridSize: Int) {
-        val addedViews: MutableList<View> = mutableListOf()
-
-        repeat(gridSize) {
-            addedViews.add(addTokenView(' '))
-        }
-
-        val constraintSet = ConstraintSet()
-        constraintSet.clone(binding.boardLayout)
-
-        addedViews.forEachIndexed { index, view ->
-            if (index == 0) {
-                constraintSet.connect(
-                    view.id,
-                    ConstraintSet.LEFT,
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.LEFT
-                )
-            } else {
-                constraintSet.connect(
-                    view.id,
-                    ConstraintSet.LEFT,
-                    addedViews[index - 1].id,
-                    ConstraintSet.RIGHT
-                )
-
-                if (index == addedViews.size - 1) {
-                    constraintSet.connect(
-                        view.id,
-                        ConstraintSet.RIGHT,
-                        ConstraintSet.PARENT_ID,
-                        ConstraintSet.RIGHT
-                    )
-                }
-            }
-        }
-
-        val viewIds = addedViews.map { view -> view.id }.toIntArray()
-
-        constraintSet.createHorizontalChain(
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.LEFT,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.RIGHT,
-            viewIds,
-            null,
-            ConstraintSet.CHAIN_SPREAD
-        )
-        constraintSet.applyTo(binding.boardLayout)
     }
 
     private fun addTokenView(tokenColor: Char): View {

@@ -8,4 +8,5 @@
     </string-array>
     <string name="start_game_positive_button">Start Game</string>
     <string name="start_game_dialog_title">Welcome to 9DT</string>
+    <string name="token_desc">Game token</string>
 </resources>
