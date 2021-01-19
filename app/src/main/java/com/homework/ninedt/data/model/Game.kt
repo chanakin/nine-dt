@@ -36,7 +36,7 @@ data class Game(
 
     fun readyToPlay() = startingPlayer != 0
 
-    fun createBoard(): List<MutableList<Int>>? {
+    fun createBoard(): List<List<Int>>? {
         if (startingPlayer == 0) {
             return null
         }

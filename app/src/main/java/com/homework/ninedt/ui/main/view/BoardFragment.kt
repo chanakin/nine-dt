@@ -39,21 +39,6 @@ class BoardFragment : Fragment() {
         return view
     }
 
-    private fun addTokenView(tokenColor: Char): View {
-        val token = View(context)
-        token.id = View.generateViewId()
-
-        val drawable = when (tokenColor) {
-            'R' -> R.drawable.red_token
-            'B' -> R.drawable.yellow_token
-            else -> R.drawable.empty_token
-        }
-
-        token.setBackgroundResource(drawable)
-        binding.boardLayout.addView(token)
-        return token
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

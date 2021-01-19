@@ -8,15 +8,15 @@ import kotlinx.coroutines.flow.Flow
 interface GameDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun createNewGame(game: Game)
+    fun createNewGame(game: Game): Long
 
     @Update
     // Returns number of rows updated
-    fun updateGame(game: Game)
+    fun updateGame(game: Game): Int
 
     @Delete
     // Returns number of rows deleted
-    fun deleteGame(game: Game)
+    fun deleteGame(game: Game): Int
 
     @Query("SELECT * FROM game")
     fun getAllGames(): Flow<List<Game>>

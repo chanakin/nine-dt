@@ -1,19 +1,22 @@
 package com.homework.ninedt.ui.main.viewmodel
 
 import android.app.Application
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.homework.ninedt.data.model.Game
 import com.homework.ninedt.data.repository.GameRepository
 import java.util.*
-import androidx.hilt.lifecycle.ViewModelInject
 
 class BoardViewModel @ViewModelInject constructor(
     application: Application,
     repository: GameRepository
 ) : AndroidViewModel(application) {
-    val game: LiveData<Game> = repository.loadActiveGame().asLiveData()
+    val game: LiveData<Game> = repository.loadActiveGame().asLiveData().distinctUntilChanged()
 
-    val startingPlayer: LiveData<Int> = Transformations.map(game) { game.value?.startingPlayer}
+    val board: LiveData<List<List<Int>>> =
+        Transformations.distinctUntilChanged(game.map { it.createBoard() })
+
+    val startingPlayer: LiveData<Int> = Transformations.map(game) { game.value?.startingPlayer }
 
     val currentPlayer: LiveData<Int> = Transformations.map(game) {
         if (it == null) {
