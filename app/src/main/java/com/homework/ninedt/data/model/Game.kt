@@ -12,7 +12,7 @@ data class Game(
     @PrimaryKey(autoGenerate = true) var id: Long = 0,
     var moves: Array<Int> = emptyArray(),
     var status: GameStatus = GameStatus.INITIALIZED,
-    var startingPlayer: Int = 0,
+    var startingPlayer: Int? = null,
     val createdDate: Date = Date(),
     var lastModified: Date = Date()
 ) {
@@ -35,7 +35,7 @@ data class Game(
     }
 
     fun readyToPlay(): Boolean {
-        return startingPlayer != 0 && when (status) {
+        return startingPlayer != null && when (status) {
             GameStatus.FORFEIT -> false
             GameStatus.CANCELLED -> false
             GameStatus.LOST -> false
@@ -44,24 +44,57 @@ data class Game(
         }
     }
 
-    fun createBoard(): List<List<Int>>? {
-        val board: List<MutableList<Int>> =
-            List(GRID_SIZE) { MutableList(GRID_SIZE) { 0 } }
-
-        if (startingPlayer == 0) {
-            return board
+    fun createBoard(): Array<Array<Int>> {
+        // Okay a couple of notes here.
+        // We're going to "fake" the board. Since it is a square,
+        // we can swap the rows and columns interchangeably - normally
+        // the first array represents rows and the second represents columns in a 2D
+        // array. In this case, we're going to have the first array represent columns
+        // and the second represent rows.
+        val board = Array(GRID_SIZE) {
+            Array(GRID_SIZE) {
+                0
+            }
         }
 
-        val secondPlayer = if (startingPlayer == 1) 2 else 1
+        startingPlayer?.let { start ->
+            val secondPlayer = if (start == 1) 2 else 1
 
-        moves.forEachIndexed { index, columnPlaced ->
-            run {
-                val currentPlayer = if (index % 2 == 0) startingPlayer else secondPlayer
-                board[columnPlaced].add(currentPlayer)
+            moves.forEachIndexed { index, columnDropped ->
+                if (columnDropped < 0 || columnDropped > 3) {
+                    throw GameException(
+                        "Invalid move was encountered; column index $columnDropped is outside the bounds of the board.",
+                        RuntimeException()
+                    )
+                }
+
+                val boardColumn = board[columnDropped]
+                val nextEmptySlot = boardColumn.indexOfLast { space -> space == 0 }
+                val currentPlayer = if (index % 2 == 0) start else secondPlayer
+                boardColumn[nextEmptySlot] = currentPlayer
             }
         }
 
         return board
+    }
+
+    fun winConditionMet(): Boolean {
+        // TODO complete this logic
+        // Split the array of moves into two
+        val p1Moves = mutableListOf<Int>()
+        val p2Moves = mutableListOf<Int>()
+
+        moves.forEachIndexed { index, move ->
+            if (index % 2 == 0) {
+                p1Moves.add(move)
+            } else {
+                p2Moves.add(move)
+            }
+        }
+
+        // This will only return true if the column matches
+        return p1Moves.groupingBy { it }.eachCount().filterValues { count -> count == 4 }.size > 0
+                || p2Moves.groupingBy { it }.eachCount().filterValues { count -> count == 4 }.size > 0
     }
 
     companion object {

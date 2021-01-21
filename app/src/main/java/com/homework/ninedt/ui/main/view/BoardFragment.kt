@@ -17,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class BoardFragment : Fragment() {
 
     companion object {
+        const val TAG = "BoardFragment"
         fun newInstance() = BoardFragment()
     }
 
@@ -33,17 +34,50 @@ class BoardFragment : Fragment() {
         val view = binding.root
 
         viewModel.board.observe(viewLifecycleOwner) { board ->
-            Log.i("BoardFragment", "Redrawing board...")
+            Log.i("BoardFragment", "Redrawing board... $board")
             redrawBoard(board)
         }
 
+        viewModel.isMyTurn.observe(viewLifecycleOwner) { myTurn ->
+            Log.i(TAG, "Turn changed: my turn? $myTurn")
+            enablePlay(myTurn)
+            binding.turnInstructions.text =
+                if (myTurn) getString(R.string.your_move_instructions) else getString(R.string.other_player_move_instructions)
+        }
+
+        setOnClickListenersForDroppingToken()
         return view
     }
 
-    private fun redrawBoard(board: List<List<Int>>) {
+    private fun setOnClickListenersForDroppingToken() {
+        binding.column1.setOnClickListener {
+            viewModel.dropToken(1)
+        }
+
+        binding.column2.setOnClickListener {
+            viewModel.dropToken(2)
+        }
+
+        binding.column3.setOnClickListener {
+            viewModel.dropToken(3)
+        }
+
+        binding.column4.setOnClickListener {
+            viewModel.dropToken(4)
+        }
+    }
+
+    private fun enablePlay(enable: Boolean) {
+        binding.column1.isEnabled = enable
+        binding.column2.isEnabled = enable
+        binding.column3.isEnabled = enable
+        binding.column4.isEnabled = enable
+    }
+
+    private fun redrawBoard(board: Array<Array<Int>>) {
         view?.let { boardView ->
-            board.forEachIndexed() { rowIndex, row ->
-                row.forEachIndexed { columnIndex, _ ->
+            board.forEachIndexed { columnIndex, column ->
+                column.forEachIndexed { rowIndex, _ ->
 
                     // find the right view
                     val correspondingTokenViewId = "row_${rowIndex + 1}_column_${columnIndex + 1}"
@@ -56,12 +90,11 @@ class BoardFragment : Fragment() {
 
                     val tokenView = boardView.findViewById<ImageView>(correspondingTokenViewResId)
                     // Player 1 is red, Player 2 is yellow
-                    val whichPlayerToken = when (board[rowIndex][columnIndex]) {
+                    val whichPlayerToken = when (board[columnIndex][rowIndex]) {
                         1 -> R.drawable.red_token
                         2 -> R.drawable.yellow_token
                         else -> R.drawable.empty_token
                     }
-
                     tokenView.setImageResource(whichPlayerToken)
                 }
             }
