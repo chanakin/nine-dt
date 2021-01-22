@@ -22,8 +22,11 @@ interface GameDao {
     fun getAllGames(): Flow<List<Game>>
 
     @Query("SELECT * FROM game where id = :id")
-    fun loadGame(id: Long): Flow<Game>
+    fun getGame(id: Long): Flow<Game?>
 
-    @Query("SELECT * FROM game ORDER BY lastModified DESC LIMIT 1")
-    fun loadLatestGame(): Flow<Game>
+    @Query("SELECT id FROM game ORDER BY lastModified DESC LIMIT 1")
+    fun getLastModifiedGameId(): Flow<Long>
+
+    @Query("SELECT COUNT(*) FROM game")
+    fun gameCount(): Int
 }

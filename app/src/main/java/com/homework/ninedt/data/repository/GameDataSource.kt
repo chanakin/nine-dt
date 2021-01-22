@@ -7,11 +7,13 @@ import kotlinx.coroutines.flow.Flow
 // and data retrieval methods allows the use of local storage as well as API calls,
 // allowing us to intelligently balance freshness of data with responsiveness of display
 interface GameDataSource {
-    fun loadActiveGame(): Flow<Game?>
+    fun getGame(id: Long): Flow<Game?>
+
+    fun getLastModifiedGameId(): Flow<Long?>
 
     suspend fun updateGame(game: Game)
 
-    suspend fun createGame(game: Game)
+    suspend fun createGame(game: Game): Long
 
     suspend fun getOtherPlayerMove(game: Game)
 

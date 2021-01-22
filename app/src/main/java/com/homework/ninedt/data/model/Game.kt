@@ -34,14 +34,8 @@ data class Game(
         return result
     }
 
-    fun readyToPlay(): Boolean {
-        return startingPlayer != null && when (status) {
-            GameStatus.FORFEIT -> false
-            GameStatus.CANCELLED -> false
-            GameStatus.LOST -> false
-            GameStatus.WON -> false
-            else -> true
-        }
+    fun awaitingStart(): Boolean {
+        return startingPlayer == null || status == GameStatus.INITIALIZED
     }
 
     fun createBoard(): Array<Array<Int>> {
@@ -94,7 +88,8 @@ data class Game(
 
         // This will only return true if the column matches
         return p1Moves.groupingBy { it }.eachCount().filterValues { count -> count == 4 }.size > 0
-                || p2Moves.groupingBy { it }.eachCount().filterValues { count -> count == 4 }.size > 0
+                || p2Moves.groupingBy { it }.eachCount()
+            .filterValues { count -> count == 4 }.size > 0
     }
 
     companion object {

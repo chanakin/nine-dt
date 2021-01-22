@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.homework.ninedt.data.utils.observeOnce
 import com.homework.ninedt.ui.main.view.BoardFragment
 import com.homework.ninedt.ui.main.view.StartGameDialogFragment
 import com.homework.ninedt.ui.main.viewmodel.BoardViewModel
@@ -19,11 +20,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.main_activity)
 
         if (savedInstanceState == null) {
-            boardViewModel.game.observe(this, { game ->
-                if (game == null) {
-                    return@observe
-                }
-
+            boardViewModel.game.observeOnce(this, { game ->
                 Log.i("MainActivity", "Game update received $game")
                 Toast.makeText(
                     baseContext,
@@ -31,12 +28,11 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
 
-                if (!game.readyToPlay()) {
+                if (game.awaitingStart()) {
                     StartGameDialogFragment().show(
                         supportFragmentManager,
                         StartGameDialogFragment.TAG
                     )
-                    return@observe
                 }
             })
 
@@ -45,4 +41,5 @@ class MainActivity : AppCompatActivity() {
                 .commitNow()
         }
     }
+
 }

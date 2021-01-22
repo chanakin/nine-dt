@@ -4,14 +4,9 @@ import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.whenCreated
-import androidx.lifecycle.whenResumed
-import androidx.lifecycle.whenStarted
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.homework.ninedt.R
 import com.homework.ninedt.ui.main.viewmodel.BoardViewModel
-import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 class StartGameDialogFragment : DialogFragment() {
@@ -20,7 +15,6 @@ class StartGameDialogFragment : DialogFragment() {
     companion object {
         const val TAG = "StartGameDialogFragment"
     }
-
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext())

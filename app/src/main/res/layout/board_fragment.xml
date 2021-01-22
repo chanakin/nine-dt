@@ -3,166 +3,218 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/board_layout"
-    android:padding="8dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="8dp"
+    tools:background="@color/colorPrimary"
     tools:context=".ui.main.view.BoardFragment">
+    
+    <ImageView
+        android:id="@+id/row_0_column_0"
+        style="@style/StartTokenView"
+        android:src="@drawable/yellow_token"
+        app:layout_constraintBottom_toTopOf="@+id/row_1_column_0"
+        app:layout_constraintEnd_toStartOf="@+id/row_0_column_1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/row_0_column_1"
+        style="@style/InnerTokenView"
+        android:src="@drawable/yellow_token"
+        app:layout_constraintBottom_toTopOf="@+id/row_1_column_1"
+        app:layout_constraintEnd_toStartOf="@+id/row_0_column_2"
+        app:layout_constraintStart_toEndOf="@+id/row_0_column_0"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/row_0_column_2"
+        style="@style/InnerTokenView"
+        android:src="@drawable/yellow_token"
+        app:layout_constraintBottom_toTopOf="@+id/row_1_column_2"
+        app:layout_constraintEnd_toStartOf="@+id/row_0_column_3"
+        app:layout_constraintStart_toEndOf="@+id/row_0_column_1"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/row_0_column_3"
+        style="@style/EndTokenView"
+        android:src="@drawable/yellow_token"
+        app:layout_constraintBottom_toTopOf="@+id/row_1_column_3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/row_0_column_2"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/row_1_column_0"
+        style="@style/StartTokenView"
+        android:src="@drawable/yellow_token"
+        app:layout_constraintBottom_toTopOf="@+id/row_2_column_0"
+        app:layout_constraintEnd_toStartOf="@+id/row_1_column_1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/row_0_column_0" />
 
     <ImageView
         android:id="@+id/row_1_column_1"
-        style="@style/StartTokenView"
-        android:src="@drawable/empty_token"
+        style="@style/InnerTokenView"
+        android:src="@drawable/yellow_token"
         app:layout_constraintBottom_toTopOf="@+id/row_2_column_1"
         app:layout_constraintEnd_toStartOf="@+id/row_1_column_2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/row_1_column_0"
+        app:layout_constraintTop_toBottomOf="@+id/row_0_column_1" />
 
     <ImageView
         android:id="@+id/row_1_column_2"
         style="@style/InnerTokenView"
-        android:src="@drawable/empty_token"
+        android:src="@drawable/yellow_token"
         app:layout_constraintBottom_toTopOf="@+id/row_2_column_2"
         app:layout_constraintEnd_toStartOf="@+id/row_1_column_3"
         app:layout_constraintStart_toEndOf="@+id/row_1_column_1"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/row_0_column_2" />
 
     <ImageView
         android:id="@+id/row_1_column_3"
-        style="@style/InnerTokenView"
-        android:src="@drawable/empty_token"
+        style="@style/EndTokenView"
+        android:src="@drawable/yellow_token"
         app:layout_constraintBottom_toTopOf="@+id/row_2_column_3"
-        app:layout_constraintEnd_toStartOf="@+id/row_1_column_4"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/row_1_column_2"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/row_0_column_3"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <ImageView
-        android:id="@+id/row_1_column_4"
-        style="@style/EndTokenView"
-        android:src="@drawable/empty_token"
-        app:layout_constraintBottom_toTopOf="@+id/row_2_column_4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/row_1_column_3"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/row_2_column_0"
+        style="@style/StartTokenView"
+        android:src="@drawable/yellow_token"
+        app:layout_constraintBottom_toTopOf="@+id/row_3_column_0"
+        app:layout_constraintEnd_toStartOf="@+id/row_2_column_1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/row_1_column_0" />
 
     <ImageView
         android:id="@+id/row_2_column_1"
-        style="@style/StartTokenView"
-        android:src="@drawable/empty_token"
+        style="@style/InnerTokenView"
+        android:src="@drawable/yellow_token"
         app:layout_constraintBottom_toTopOf="@+id/row_3_column_1"
         app:layout_constraintEnd_toStartOf="@+id/row_2_column_2"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/row_2_column_0"
         app:layout_constraintTop_toBottomOf="@+id/row_1_column_1" />
 
     <ImageView
         android:id="@+id/row_2_column_2"
         style="@style/InnerTokenView"
-        android:src="@drawable/empty_token"
+        android:src="@drawable/yellow_token"
         app:layout_constraintBottom_toTopOf="@+id/row_3_column_2"
         app:layout_constraintEnd_toStartOf="@+id/row_2_column_3"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/row_2_column_1"
-        app:layout_constraintTop_toBottomOf="@+id/row_1_column_2" />
+        app:layout_constraintTop_toBottomOf="@+id/row_1_column_2"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <ImageView
         android:id="@+id/row_2_column_3"
-        style="@style/InnerTokenView"
-        android:src="@drawable/empty_token"
+        style="@style/EndTokenView"
+        android:src="@drawable/yellow_token"
         app:layout_constraintBottom_toTopOf="@+id/row_3_column_3"
-        app:layout_constraintEnd_toStartOf="@+id/row_2_column_4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/row_2_column_2"
-        app:layout_constraintTop_toBottomOf="@+id/row_1_column_3" />
+        app:layout_constraintTop_toBottomOf="@+id/row_1_column_3"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <ImageView
-        android:id="@+id/row_2_column_4"
-        style="@style/EndTokenView"
-        android:src="@drawable/empty_token"
-        app:layout_constraintBottom_toTopOf="@+id/row_3_column_4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/row_2_column_3"
-        app:layout_constraintTop_toBottomOf="@+id/row_1_column_4"
+        android:id="@+id/row_3_column_0"
+        style="@style/StartTokenView"
+        android:src="@drawable/yellow_token"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/row_3_column_1"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/row_2_column_0"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <ImageView
         android:id="@+id/row_3_column_1"
-        style="@style/StartTokenView"
-        android:src="@drawable/empty_token"
-        app:layout_constraintBottom_toTopOf="@+id/row_4_column_1"
+        style="@style/InnerTokenView"
+        android:src="@drawable/yellow_token"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/row_3_column_2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/row_2_column_1" />
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/row_3_column_0"
+        app:layout_constraintTop_toBottomOf="@+id/row_2_column_1"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <ImageView
         android:id="@+id/row_3_column_2"
         style="@style/InnerTokenView"
-        android:src="@drawable/empty_token"
-        app:layout_constraintBottom_toTopOf="@+id/row_4_column_2"
+        android:src="@drawable/yellow_token"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/row_3_column_3"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/row_3_column_1"
-        app:layout_constraintTop_toBottomOf="@+id/row_2_column_2" />
+        app:layout_constraintTop_toBottomOf="@+id/row_2_column_2"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <ImageView
         android:id="@+id/row_3_column_3"
-        style="@style/InnerTokenView"
-        android:src="@drawable/empty_token"
-        app:layout_constraintBottom_toTopOf="@+id/row_4_column_3"
-        app:layout_constraintEnd_toStartOf="@+id/row_3_column_4"
+        style="@style/EndTokenView"
+        android:src="@drawable/yellow_token"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/row_3_column_2"
         app:layout_constraintTop_toBottomOf="@+id/row_2_column_3"
         app:layout_constraintVertical_chainStyle="packed" />
 
-    <ImageView
-        android:id="@+id/row_3_column_4"
-        style="@style/EndTokenView"
-        android:src="@drawable/empty_token"
-        app:layout_constraintBottom_toTopOf="@+id/row_4_column_4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toEndOf="@+id/row_3_column_3"
-        app:layout_constraintTop_toBottomOf="@+id/row_2_column_4"
-        app:layout_constraintVertical_chainStyle="packed" />
+    <Button
+        android:id="@+id/column_0"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingVertical="06dp"
+        app:layout_constraintBottom_toBottomOf="@+id/row_3_column_0"
+        app:layout_constraintEnd_toEndOf="@id/row_0_column_0"
+        app:layout_constraintStart_toStartOf="@id/row_0_column_0"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/row_4_column_1"
-        style="@style/StartTokenView"
-        android:src="@drawable/empty_token"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/row_4_column_2"
-        app:layout_constraintHorizontal_chainStyle="packed"
+    <Button
+        android:id="@+id/column_1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingVertical="06dp"
+        app:layout_constraintBottom_toBottomOf="@+id/row_3_column_1"
+        app:layout_constraintEnd_toEndOf="@id/row_0_column_1"
+        app:layout_constraintStart_toStartOf="@id/row_0_column_1"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/column_2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/row_3_column_2"
+        app:layout_constraintEnd_toEndOf="@id/row_0_column_2"
+        app:layout_constraintStart_toStartOf="@id/row_0_column_2"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/column_3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingVertical="06dp"
+        app:layout_constraintBottom_toBottomOf="@+id/row_3_column_3"
+        app:layout_constraintEnd_toEndOf="@id/row_0_column_3"
+        app:layout_constraintStart_toStartOf="@id/row_0_column_3"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/turn_instructions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@id/row_0_column_0"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/row_3_column_1"
-        app:layout_constraintVertical_chainStyle="packed" />
-
-    <ImageView
-        android:id="@+id/row_4_column_2"
-        style="@style/InnerTokenView"
-        android:src="@drawable/empty_token"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/row_4_column_3"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toEndOf="@+id/row_4_column_1"
-        app:layout_constraintTop_toBottomOf="@+id/row_3_column_2"
-        app:layout_constraintVertical_chainStyle="packed" />
-
-    <ImageView
-        android:id="@+id/row_4_column_3"
-        style="@style/InnerTokenView"
-        android:src="@drawable/empty_token"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/row_4_column_4"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toEndOf="@+id/row_4_column_2"
-        app:layout_constraintTop_toBottomOf="@+id/row_3_column_3"
-        app:layout_constraintVertical_chainStyle="packed" />
-
-    <ImageView
-        android:id="@+id/row_4_column_4"
-        style="@style/EndTokenView"
-        android:src="@drawable/empty_token"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toEndOf="@+id/row_4_column_3"
-        app:layout_constraintTop_toBottomOf="@+id/row_3_column_4"
-        app:layout_constraintVertical_chainStyle="packed" />
+        tools:text="@string/your_move_instructions"
+        android:text="@string/your_move_instructions"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

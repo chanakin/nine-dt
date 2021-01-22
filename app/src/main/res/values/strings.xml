@@ -9,4 +9,6 @@
     <string name="start_game_positive_button">Start Game</string>
     <string name="start_game_dialog_title">Welcome to 9DT</string>
     <string name="token_desc">Game token</string>
+    <string name="your_move_instructions">Select a column to drop your token in</string>
+    <string name="other_player_move_instructions">Please wait while the other player makes their move</string>
 </resources>

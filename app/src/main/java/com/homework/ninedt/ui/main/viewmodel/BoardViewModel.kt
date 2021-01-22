@@ -1,12 +1,14 @@
 package com.homework.ninedt.ui.main.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.homework.ninedt.data.model.Game
 import com.homework.ninedt.data.model.GameStatus
 import com.homework.ninedt.data.repository.GameRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -14,94 +16,90 @@ class BoardViewModel @ViewModelInject constructor(
     application: Application,
     val repository: GameRepository
 ) : AndroidViewModel(application) {
-    val game: LiveData<Game?> = repository.loadActiveGame().asLiveData().distinctUntilChanged()
 
-    val board: LiveData<List<List<Int>>> =
-        Transformations.distinctUntilChanged(game?.map { if (it != null) it.createBoard() else emptyList() })
+    private val gameId: LiveData<Long> =
+        repository.getLastModifiedGameId().filterNotNull().distinctUntilChanged().asLiveData()
 
-    val startingPlayer: LiveData<Int> = Transformations.map(game) { game.value?.startingPlayer }
-
-    val currentPlayer: LiveData<Int> = Transformations.map(game) {
-        if (it == null) {
-            return@map 0
+    val game: LiveData<Game> = Transformations.switchMap(gameId) {
+        val flow = repository.getGame(it).filterNotNull()
+        Log.i(TAG, "Launching collector of gameflow")
+        // Listen for changes that indicate we need to get the next move from the server
+        viewModelScope.launch(Dispatchers.IO) {
+            flow.collect { gameFromFlow ->
+                Log.i(TAG, "Collecting change to game $gameFromFlow")
+                if (gameFromFlow.status == GameStatus.INPROGRESS && !isMyTurn(gameFromFlow)) {
+                    repository.getOtherPlayerMove(gameFromFlow)
+                }
+            }
         }
 
-        if (it.startingPlayer == 0) {
-            return@map 0
+        flow.asLiveData(viewModelScope.coroutineContext)
+    }
+
+    val isMyTurn: LiveData<Boolean> = Transformations.map(game) {
+        return@map isMyTurn(it)
+    }.distinctUntilChanged()
+
+    val board: LiveData<Array<Array<Int>>> =
+        Transformations.map(game) {
+            Log.i(TAG, "Regenerating board after change in game $it")
+            return@map it.createBoard()
+        }.distinctUntilChanged()
+
+    private fun isMyTurn(it: Game): Boolean {
+        if (it.startingPlayer == null) {
+            return false
         }
 
         val secondPlayer = if (it.startingPlayer == 1) 2 else 1
-        return@map if (it.moves.size % 2 == 0) it.startingPlayer else secondPlayer
+        val currentPlayer = if (it.moves.size % 2 == 0) it.startingPlayer else secondPlayer
+
+        return currentPlayer == 1
     }
-
-    private var _loading = MutableLiveData(false)
-
-    val loading: LiveData<Boolean> = _loading
 
     fun setStartingPlayer(startPlayer: Int) {
         game.value?.let {
-            it.startingPlayer = startPlayer
-            it.status = GameStatus.INPROGRESS
-            viewModelScope.launch(Dispatchers.IO) {
-                repository.updateGame(it)
+            // Reject changes unless we are only in initialized state
+            if (it.status == GameStatus.INITIALIZED) {
+                Log.i(TAG, "Setting starting player $startPlayer")
+                it.startingPlayer = startPlayer
+                viewModelScope.launch(Dispatchers.IO) {
+                    repository.updateGame(it)
+                }
             }
         }
     }
 
     fun startGame() {
         game.value?.let {
-            if (it.readyToPlay()) {
-                it.status = GameStatus.INPROGRESS
-                viewModelScope.launch(Dispatchers.IO) {
-                    repository.updateGame(it)
+            if (it.status != GameStatus.INITIALIZED) {
+                return
+            }
 
-                    // Did the other player get chosen to start first? If so, we have to ask it for the
-                    // starting move
-                    if (it.startingPlayer != 1) {
-                        repository.getOtherPlayerMove(it)
-                    }
-                }
+            if (it.startingPlayer == null) {
+                return
+            }
+
+            viewModelScope.launch(Dispatchers.IO) {
+                it.status = GameStatus.INPROGRESS
+                repository.updateGame(it)
             }
         }
     }
 
-    // I don't love using a hardcoded integer for starting player where 1 is the current user and 2 is the AI.
-    // My preference would be to use a User object instead,
-    // so that we can designate the winner/loser/current player etc by ID rather than by a magic number
-//    fun startGame() {
-//        val currentStartingPlayer = startingPlayer.value
-//
-//        if (currentStartingPlayer != 1 && currentStartingPlayer != 2) {
-//            return
-//        }
-//
-//        val createdDate = Date()
-//        val newGame = Game(
-//            moves = emptyArray(),
-//            startingPlayer = currentStartingPlayer, status = GameStatus.INPROGRESS, createdDate = createdDate, lastModified = createdDate)
-////        repository.createGame(game = newGame)
-//    }
-
-//    fun getBoard(): LiveData<List<MutableList<Char>>> {
-//        val moves: LiveData<Array<Int>> = savedStateHandle.getLiveData(MOVES_SS_KEY)
-//    }
-//
-//    fun makeMove(column: Int): LiveData<List<MutableList<Char>>> {
-//        return LiveData<>()
-//        // Good form here would actually be to NOT implement the logic client side to validate
-//        // a move.
-////        emit(com.homework.ninedt.data.api.Resource.Loading(data = null))
-////
-////        try {
-////            emit(Result.success(data = repository.getPlayer2Move()))
-////        } catch (exception: Exception) {
-////            emit(Result.error(data = null, message = exception.message ?: "Error Occurred!"))
-////        }
-//
-//    }
+    fun dropToken(column: Int) {
+        Log.i(TAG, "Dropped token in column $column")
+        game.value?.let { preDropToken ->
+            viewModelScope.launch(Dispatchers.IO) {
+                val newMoves = preDropToken.moves.toMutableList()
+                newMoves.add(column)
+                preDropToken.moves = newMoves.toTypedArray()
+                repository.updateGame(game = preDropToken)
+            }
+        }
+    }
 
     companion object {
-//        const val MOVES_SS_KEY = "moves"
-//        const val STARTING_PLAYER_KEY = "startingPlayer"
+        const val TAG = "BoardViewModel"
     }
 }

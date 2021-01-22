@@ -1,9 +1,10 @@
 package com.homework.ninedt.data.repository
 
+import android.util.Log
 import com.homework.ninedt.data.api.NineDTApiService
 import com.homework.ninedt.data.database.GameDao
 import com.homework.ninedt.data.model.Game
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.*
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,32 +17,44 @@ class GameRepository @Inject constructor(
     private val gameDao: GameDao,
     private val gameService: NineDTApiService
 ) : GameDataSource {
-    override fun loadActiveGame(): Flow<Game?> {
-        return gameDao.loadLatestGame()
-    }
 
-    // TODO when it's time, implement this so they can start a new game
-    override suspend fun createGame(game: Game) {
-        gameDao.createNewGame(game)
+    override fun getGame(id: Long): Flow<Game?> = gameDao.getGame(id)
+
+    override fun getLastModifiedGameId(): Flow<Long?> = gameDao.getLastModifiedGameId()
+
+    override suspend fun createGame(game: Game): Long {
+        Log.i(TAG, "Creating a new game $game")
+        return gameDao.createNewGame(game)
     }
 
     override suspend fun updateGame(game: Game) {
+        Log.i(TAG, "Updating game $game")
         game.lastModified = Date()
-        gameDao.updateGame(game)
+        val updatedRow = gameDao.updateGame(game)
+        Log.i(TAG, "Updated row count $updatedRow")
     }
 
     override suspend fun getOtherPlayerMove(game: Game) {
-        game.moves = gameService.getNextMove(game.moves)
+        Log.i(TAG, "Sending moves: $game.moves")
+        game.moves = gameService.getNextMove(
+            game.moves.joinToString(
+                prefix = "[",
+                postfix = "]",
+                separator = ","
+            )
+        )
+        Log.i(TAG, "Got moves back: ${game.moves}")
         updateGame(game)
     }
 
     override suspend fun saveDroppedToken(game: Game, column: Int) {
-        val newMoves = game.moves.toMutableList()
-        newMoves.add(column)
-        game.moves = newMoves.toTypedArray()
+        Log.i(TAG, "Saving dropped token for $game at column $column")
+
         updateGame(game)
-        game.moves = gameService.getNextMove(newMoves.toTypedArray())
-        updateGame(game)
+    }
+
+    companion object {
+        const val TAG = "GameRepository"
     }
 }
 

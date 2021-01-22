@@ -50,6 +50,10 @@ class BoardFragment : Fragment() {
     }
 
     private fun setOnClickListenersForDroppingToken() {
+        binding.column0.setOnClickListener {
+            viewModel.dropToken(0)
+        }
+
         binding.column1.setOnClickListener {
             viewModel.dropToken(1)
         }
@@ -61,17 +65,13 @@ class BoardFragment : Fragment() {
         binding.column3.setOnClickListener {
             viewModel.dropToken(3)
         }
-
-        binding.column4.setOnClickListener {
-            viewModel.dropToken(4)
-        }
     }
 
     private fun enablePlay(enable: Boolean) {
+        binding.column0.isEnabled = enable
         binding.column1.isEnabled = enable
         binding.column2.isEnabled = enable
         binding.column3.isEnabled = enable
-        binding.column4.isEnabled = enable
     }
 
     private fun redrawBoard(board: Array<Array<Int>>) {
@@ -80,7 +80,7 @@ class BoardFragment : Fragment() {
                 column.forEachIndexed { rowIndex, _ ->
 
                     // find the right view
-                    val correspondingTokenViewId = "row_${rowIndex + 1}_column_${columnIndex + 1}"
+                    val correspondingTokenViewId = "row_${rowIndex}_column_${columnIndex}"
                     val correspondingTokenViewResId =
                         resources.getIdentifier(
                             correspondingTokenViewId,

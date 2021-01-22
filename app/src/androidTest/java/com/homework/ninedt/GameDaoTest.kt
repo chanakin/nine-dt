@@ -8,9 +8,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.homework.ninedt.data.database.GameDao
 import com.homework.ninedt.data.database.GameDatabase
 import com.homework.ninedt.data.model.Game
-import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers
 import org.junit.After
@@ -54,7 +52,7 @@ class DatabaseTest {
         game.id = id
 
         // TEST
-        val byId = gameDao.loadGame(id).first()
+        val byId = gameDao.getGame(id).first()
 
         // VERIFY
         assertThat(byId, CoreMatchers.equalTo(game))
@@ -98,7 +96,7 @@ class DatabaseTest {
         val updatedRows = gameDao.updateGame(latest)
         assertThat(updatedRows, CoreMatchers.equalTo(1))
 
-        val updatedGame = gameDao.loadGame(latest.id).first()
+        val updatedGame = gameDao.getGame(latest.id).first()
         assertThat(updatedGame, CoreMatchers.equalTo(latest))
     }
 

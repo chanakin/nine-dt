@@ -1,4 +1,4 @@
 package com.homework.ninedt.data.model
 
-class GameException(message: String?, cause: Throwable?) : Exception(message, cause) {
-}
+data class GameException(override val message: String?, override val cause: Throwable?) :
+    Exception(message, cause)

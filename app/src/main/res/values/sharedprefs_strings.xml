@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shared_prefs_file_key">9DTSharedPrefs</string>
+    <string name="game_id_key">GameID</string>
+</resources>
