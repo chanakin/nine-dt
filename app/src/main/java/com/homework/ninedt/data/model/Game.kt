@@ -55,9 +55,9 @@ data class Game(
             val secondPlayer = if (start == 1) 2 else 1
 
             moves.forEachIndexed { index, columnDropped ->
-                if (columnDropped < 0 || columnDropped > 3) {
+                if (!validateMove(columnDropped, board)) {
                     throw GameException(
-                        "Invalid move was encountered; column index $columnDropped is outside the bounds of the board.",
+                        "Invalid move was encountered; placing a token at column index $columnDropped is outside the bounds of the board.",
                         RuntimeException()
                     )
                 }
@@ -70,6 +70,109 @@ data class Game(
         }
 
         return board
+    }
+
+    fun validateMove(columnDropped: Int, board: Array<Array<Int>>): Boolean {
+        if (columnDropped < 0 || columnDropped > 3) {
+            return false
+        }
+
+        val column = board[columnDropped]
+        return column.contains(0) // a slot must be empty or you can't place this
+    }
+
+    fun checkForWin(lastPlacedColumnIndex: Int, board: Array<Array<Int>>): Boolean {
+        val rowIndex = board[lastPlacedColumnIndex].indexOfFirst { it != 0 }
+        val lastPlayedToken = board[lastPlacedColumnIndex][rowIndex]
+
+        // Check vertical -- this is the easiest; we only check if we have all 4 tokens in the column
+        // set
+        if (checkVertical(lastPlayedToken, rowIndex, lastPlacedColumnIndex, board)) {
+            return true
+        }
+
+        // Check horizontal
+        if (checkHorizontal(lastPlayedToken, rowIndex, board)) {
+            return true
+        }
+
+        // Check diagonal
+        if (checkDescendingDiagonal(lastPlayedToken, rowIndex, lastPlacedColumnIndex, board)) {
+            return true
+        }
+
+        return checkAscendingDiagonal(lastPlayedToken, rowIndex, lastPlacedColumnIndex, board)
+    }
+
+    private fun checkVertical(
+        lastPlayedToken: Int,
+        rowIndex: Int,
+        columnIndex: Int,
+        board: Array<Array<Int>>,
+    ): Boolean {
+        if (rowIndex == GRID_SIZE && board[columnIndex].none { tokenPlayed -> tokenPlayed != lastPlayedToken }) {
+            return true
+        }
+
+        return false
+    }
+
+    fun checkHorizontal(playerToken: Int, row: Int, board: Array<Array<Int>>): Boolean {
+        for (column in 0..GRID_SIZE) {
+            if (board[column][row] != playerToken) {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    fun checkDescendingDiagonal(
+        playerToken: Int,
+        rowIndex: Int,
+        columnIndex: Int,
+        board: Array<Array<Int>>
+    ): Boolean {
+        // An optimization - we will take advantage of the fact this is a square grid
+        if (rowIndex != columnIndex) {
+            return false
+        }
+
+        for (i in 0..GRID_SIZE) {
+            // Check: does the token match our last played token
+            if (board[i][i] != playerToken) {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    fun checkAscendingDiagonal(
+        playerToken: Int,
+        rowIndex: Int,
+        columnIndex: Int,
+        board: Array<Array<Int>>
+    ): Boolean {
+        // An optimization - again taking advantage of the fact this is a square grid
+        // get to the bottom of the grid
+        val distanceToBottomRow =
+            GRID_SIZE - rowIndex - 1 // you must offset by 1 since grid size is not 0-based
+
+        // Change the coordinates and see if they are our bottom corner coordinates
+        if (columnIndex - distanceToBottomRow != 0) {
+            return false
+        }
+
+        for (column in GRID_SIZE downTo 0) {
+            for (row in 0..GRID_SIZE) {
+                if (board[column][row] != playerToken) {
+                    return false
+                }
+            }
+        }
+
+        return true
     }
 
     fun winConditionMet(): Boolean {

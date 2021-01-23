@@ -8,6 +8,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.homework.ninedt.data.database.GameDao
 import com.homework.ninedt.data.database.GameDatabase
 import com.homework.ninedt.data.model.Game
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers
@@ -78,8 +79,8 @@ class DatabaseTest {
             lastIdCreated = gameDao.createNewGame(Game(moves = arrayOf(it)))
         }
 
-        val byLatest = gameDao.loadLatestGame().first()
-        assertThat(byLatest.id, CoreMatchers.equalTo(lastIdCreated))
+        val byLatest = gameDao.getGame(gameDao.getLastModifiedGameId().first()).first()
+        assertThat(byLatest?.id, CoreMatchers.equalTo(lastIdCreated))
     }
 
     @Test
@@ -88,7 +89,7 @@ class DatabaseTest {
             gameDao.createNewGame(Game())
         }
 
-        val latest = gameDao.loadLatestGame().first()
+        val latest = gameDao.getGame(gameDao.getLastModifiedGameId().first()).first()!!
         latest.moves = arrayOf(1, 2, 3, 4)
         latest.startingPlayer = 2
         latest.lastModified = Date()

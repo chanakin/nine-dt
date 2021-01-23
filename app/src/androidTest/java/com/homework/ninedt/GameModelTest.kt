@@ -2,6 +2,7 @@ package com.homework.ninedt
 
 import com.homework.ninedt.data.model.Game
 import com.homework.ninedt.data.model.GameException
+import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
@@ -148,5 +149,55 @@ class GameModelTest {
                 }
             }
         }
+    }
+
+    @Test
+    fun tokenDroppedInLeftmostEmptyColumn_isValid() {
+        val game = Game()
+
+        assert(game.validateMove(0, game.createBoard()))
+    }
+
+    @Test
+    fun tokenDroppedInRightmostEmptyColumn_isValid() {
+        val game = Game()
+
+        assert(game.validateMove(3, game.createBoard()))
+    }
+
+    @Test
+    fun tokenDroppedOutsideRightmostColumnBounds_asFirstMove_failsValidation() {
+        val game = Game()
+        Assert.assertFalse(game.validateMove(4, game.createBoard()))
+    }
+
+    @Test
+    fun tokenDroppedOutsideLeftMostColumnBounds_asFirstMove_failsValidation() {
+        val game = Game()
+        Assert.assertFalse(game.validateMove(-1, game.createBoard()))
+    }
+
+    @Test
+    fun tokenDroppedInFullColumn_failsValidation() {
+        val game = Game(moves = arrayOf(1,1,1,1))
+        Assert.assertFalse(game.validateMove(1, game.createBoard()))
+    }
+
+    @Test
+    fun tokenDroppedInLastEmptySpace_isValid() {
+        val game = Game(moves = arrayOf(1,1,1))
+        assert(game.validateMove(1, game.createBoard()))
+    }
+
+    @Test
+    fun tokenDroppedInColumnWith2Tokens_isValid() {
+        val game = Game(moves = arrayOf(2,2))
+        assert(game.validateMove(2, game.createBoard()))
+    }
+
+    @Test
+    fun tokenDroppedInColumnOnBoardWithOnlyOneSpaceRemaining_isValid() {
+        val game = Game(moves = arrayOf(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4))
+        assert(game.validateMove(4, game.createBoard()))
     }
 }
