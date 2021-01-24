@@ -14,6 +14,6 @@
     <string name="game_over">Game Over</string>
     <string name="win_message">Congratulations - you won!</string>
     <string name="lose_message">Oh no! You lost.</string>
-    <string name="everybody_loses">A tie! Better luck next time.</string>
+    <string name="everybody_loses">A draw! Better luck next time.</string>
     <string name="play_again">Play Again</string>
 </resources>
