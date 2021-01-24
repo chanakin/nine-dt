@@ -9,9 +9,5 @@ data class Response<out T>(val status: Status, val data: T?, val message: String
         fun <T> error(msg: String, data: T?): Response<T> {
             return Response(Status.ERROR, data, msg)
         }
-
-        fun <T> loading(data: T?): Response<T> {
-            return Response(Status.LOADING, data, null)
-        }
     }
 }

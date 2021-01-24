@@ -2,7 +2,6 @@ package com.homework.ninedt.ui.main.viewmodel
 
 import android.app.Application
 import android.content.Context
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.homework.ninedt.R
@@ -35,7 +34,6 @@ class GameViewModel @ViewModelInject constructor(
         repository.getLastModifiedGameId().filterNotNull().distinctUntilChanged().asLiveData()
 
     val game: LiveData<Game> = Transformations.switchMap(gameId) {
-        Log.i(TAG, "Game ID changing, triggering new repository update $gameId")
         repository.getGame(it).filterNotNull().asLiveData(viewModelScope.coroutineContext)
     }
 
@@ -67,7 +65,6 @@ class GameViewModel @ViewModelInject constructor(
     fun setStartingPlayer(startPlayer: Long) {
         game.value?.let {
             viewModelScope.launch {
-                Log.i(TAG, "Setting starting player $startPlayer")
                 val response = repository.changeStartingPlayer(it, startPlayer)
                 handleResponse(response)
             }
@@ -90,16 +87,11 @@ class GameViewModel @ViewModelInject constructor(
     }
 
     fun dropToken(column: Int) {
-        Log.i(TAG, "Dropped token in column $column")
         game.value?.let {
             viewModelScope.launch {
                 val response = repository.makeMove(column, it)
                 handleResponse(response)
             }
         }
-    }
-
-    companion object {
-        const val TAG = "BoardViewModel"
     }
 }

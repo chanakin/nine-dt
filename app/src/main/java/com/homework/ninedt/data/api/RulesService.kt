@@ -1,6 +1,5 @@
 package com.homework.ninedt.data.api
 
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.homework.ninedt.data.model.Game
 import com.homework.ninedt.data.model.GameException
@@ -32,20 +31,24 @@ class RulesService @Inject constructor(private val gameService: NineDTApiService
     }
 
     fun changeStartingPlayer(game: Game, startingPlayerId: Long): Response<Game> {
-        if (game.status == GameStatus.INITIALIZED) {
-            if (startingPlayerId == game.playerOneId) {
-                return Response.success(game)
-            }
+        if (game.status != GameStatus.INITIALIZED) {
+            return Response.error("Cannot change the starting player after a game has begun.", game)
+        }
 
-            game.playerTwoId = game.playerOneId
-            game.playerOneId = startingPlayerId
+        if (startingPlayerId == game.playerOneId) {
             return Response.success(game)
         }
 
-        return Response.error("Cannot change the starting player after a game has begun.", game)
+        game.playerTwoId = game.playerOneId
+        game.playerOneId = startingPlayerId
+        return Response.success(game)
     }
 
     fun makeMove(columnDropped: Int, game: Game): Response<Game> {
+        if (game.status != GameStatus.INPROGRESS) {
+            return Response.error("Moves cannot be made for a game that is not in progress.", game)
+        }
+
         try {
             validateMove(columnDropped, game)
         } catch (ge: GameException) {
@@ -58,7 +61,6 @@ class RulesService @Inject constructor(private val gameService: NineDTApiService
     @Throws
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal fun validateMove(columnDropped: Int, game: Game): Boolean {
-        Log.i(TAG, "Validating move at index $columnDropped for $game")
         if (columnDropped < 0 || columnDropped > 3) {
             throw GameException(
                 "The column selected is out of bounds for the board.",
@@ -74,19 +76,16 @@ class RulesService @Inject constructor(private val gameService: NineDTApiService
             )
         }
 
-        Log.i(TAG, "Move was found valid.")
         return true
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal fun checkIfGameIsOver(game: Game): Boolean {
-        Log.i(TAG, "Checking for end of game conditions for $game")
         // First check for a win
         if (checkForWin(game)) {
             val lastPlayer = if (game.moves.size % 2 == 1) game.playerOneId else game.playerTwoId
             game.winningPlayerId = lastPlayer
             game.status = GameStatus.COMPLETED
-            Log.i(TAG, "A win was achieved!")
             return true
         }
 
@@ -97,7 +96,6 @@ class RulesService @Inject constructor(private val gameService: NineDTApiService
             }
         }
 
-        Log.i(TAG, "All slots were filled, but no one won! :(")
         game.status = GameStatus.COMPLETED
         return true
     }
@@ -140,9 +138,7 @@ class RulesService @Inject constructor(private val gameService: NineDTApiService
         columnIndex: Int,
         board: Array<Array<Long?>>,
     ): Boolean {
-        Log.i(TAG, "Checking vertical for tokens $lastPlayedToken in column $columnIndex and row $rowIndex - all column values are ${board[columnIndex]}")
         if (rowIndex == 0 && board[columnIndex].all { tokenPlayed -> tokenPlayed == lastPlayedToken }) {
-            Log.i(TAG, "Win found on vertical")
             return true
         }
 
@@ -151,13 +147,10 @@ class RulesService @Inject constructor(private val gameService: NineDTApiService
 
     private fun checkHorizontal(playerToken: Long, row: Int, board: Array<Array<Long?>>): Boolean {
         for (column in 0 until Game.GRID_SIZE) {
-            Log.i(TAG, "Checking column $column and row $row - token is ${board[column][row]}")
             if (board[column][row] != playerToken) {
                 return false
             }
         }
-
-        Log.i(TAG, "Win found on horizontal")
 
         return true
     }
@@ -180,7 +173,6 @@ class RulesService @Inject constructor(private val gameService: NineDTApiService
             }
         }
 
-        Log.i(TAG, "Win found on descending diagonal")
         return true
     }
 
@@ -201,16 +193,15 @@ class RulesService @Inject constructor(private val gameService: NineDTApiService
         }
 
         // start at the bottom and work your way up, lads & lassies
-        var rowIndexStart = Game.GRID_SIZE - 1
+        var row = Game.GRID_SIZE - 1
 
-        for (columnIndex in 0 until Game.GRID_SIZE) {
-            if (board[columnIndex][rowIndexStart] != playerToken) {
+        for (column in 0 until Game.GRID_SIZE) {
+            if (board[column][row] != playerToken) {
                 return false
             }
-            rowIndexStart--
+            row--
         }
 
-        Log.i(TAG, "Win found on ascending diagonal")
         return true
     }
 
@@ -230,14 +221,9 @@ class RulesService @Inject constructor(private val gameService: NineDTApiService
                 )
             )
 
-            Log.i(TAG, "After moves received $moves")
             moveCompleted(game, moves[moves.size - 1])
         } catch (e: Exception) {
             Response.error(e.message ?: "Unexpected error received", game)
         }
-    }
-
-    companion object {
-        const val TAG = "RulesService"
     }
 }

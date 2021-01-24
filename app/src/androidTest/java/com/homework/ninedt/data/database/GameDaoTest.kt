@@ -70,7 +70,7 @@ class DatabaseTest {
         }
 
         // VERIFY
-        assertThat(gameDao.getAllGames().first().size, CoreMatchers.equalTo(5))
+        assertThat(gameDao.getAllGames().first().size, CoreMatchers.equalTo(3))
     }
 
     @Test
@@ -140,12 +140,5 @@ class DatabaseTest {
         assertThat(deletedRows, CoreMatchers.equalTo(1))
         assertThat(postDeleteGamesList.size, CoreMatchers.equalTo(2))
         assertThat(postDeleteGamesList, CoreMatchers.equalTo(preDeleteGamesList.subList(1, 3)))
-    }
-
-    @Test
-    fun useAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.homework.ninedt", appContext.packageName)
     }
 }

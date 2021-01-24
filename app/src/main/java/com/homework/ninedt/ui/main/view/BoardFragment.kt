@@ -1,7 +1,6 @@
 package com.homework.ninedt.ui.main.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,7 +35,6 @@ class BoardFragment : Fragment() {
         val view = binding.root
 
         viewModel.game.observe(viewLifecycleOwner) { game ->
-            Log.i("BoardFragment", "Redrawing board... $game")
             redrawBoard(game.board, game.playerOneId, game.playerTwoId)
 
             binding.turnInstructions.visibility =
@@ -49,7 +47,6 @@ class BoardFragment : Fragment() {
         }
 
         viewModel.isMyTurn.observe(viewLifecycleOwner) { myTurn ->
-            Log.i(TAG, "Turn changed: my turn? $myTurn")
             enablePlay(myTurn)
             binding.turnInstructions.text =
                 if (myTurn) getString(R.string.your_move_instructions) else getString(R.string.other_player_move_instructions)

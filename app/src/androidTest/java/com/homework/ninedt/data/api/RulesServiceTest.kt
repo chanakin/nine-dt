@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.homework.ninedt.data.generateGameForTest
 import com.homework.ninedt.data.model.GameException
 import com.homework.ninedt.data.model.GameStatus
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
@@ -100,12 +101,12 @@ class RulesServiceTest {
     }
 
     @Test
-    /**
-     * R
-     * R Y
-     * R Y
-     * R Y
-     */
+            /**
+             * R
+             * R Y
+             * R Y
+             * R Y
+             */
     fun checkForWin_verticalMatch_returnsWin() {
         val game = generateGameForTest(moves = arrayOf(0, 1, 0, 1, 0, 1, 0))
         val result = service.checkForWin(game)
@@ -113,10 +114,10 @@ class RulesServiceTest {
     }
 
     @Test
-    /**
-     * Y Y Y
-     * R R R R
-     */
+            /**
+             * Y Y Y
+             * R R R R
+             */
     fun checkForWin_horizontalMatch_returnsWin() {
         val game = generateGameForTest(moves = arrayOf(0, 0, 1, 1, 2, 2, 3))
         val result = service.checkForWin(game)
@@ -124,9 +125,9 @@ class RulesServiceTest {
     }
 
     @Test
-    /**
-     * [] empty board
-     */
+            /**
+             * [] empty board
+             */
     fun checkForWin_emptyMoveset_returnsNoWin() {
         val game = generateGameForTest()
         val result = service.checkForWin(game)
@@ -134,12 +135,12 @@ class RulesServiceTest {
     }
 
     @Test
-    /**
-     * Y
-     * R Y
-     * R R Y
-     * R Y R Y
-     */
+            /**
+             * Y
+             * R Y
+             * R R Y
+             * R Y R Y
+             */
     fun checkForWin_descendingDiagonalMatch_returnsWin() {
         val game = generateGameForTest(moves = arrayOf(0, 1, 0, 3, 2, 2, 1, 1, 0, 0))
         val result = service.checkForWin(game)
@@ -148,12 +149,12 @@ class RulesServiceTest {
 
 
     @Test
-    /**
-     *       R
-     * R Y R Y
-     * R R Y Y
-     * R Y R Y
-     */
+            /**
+             *       R
+             * R Y R Y
+             * R R Y Y
+             * R Y R Y
+             */
     fun checkForWin_ascendingDiagonalMatch_returnsWin() {
         val game = generateGameForTest(moves = arrayOf(0, 1, 0, 3, 2, 2, 1, 1, 0, 3, 2, 3, 3))
         val result = service.checkForWin(game)
@@ -161,13 +162,13 @@ class RulesServiceTest {
     }
 
     @Test
-    /**
-     * R R
-     * Y Y Y Y
-     * R Y R R
-     */
+            /**
+             * R R
+             * Y Y Y Y
+             * R Y R R
+             */
     fun checkIfGameIsOver_gameWon_returnsTrueMarksGameCompleteSetsWinningPlayer() {
-        val game = generateGameForTest(moves = arrayOf(0,1,2,0,3,1,0,2,1,3))
+        val game = generateGameForTest(moves = arrayOf(0, 1, 2, 0, 3, 1, 0, 2, 1, 3))
 
         val afterCheck = service.checkIfGameIsOver(game)
 
@@ -177,12 +178,12 @@ class RulesServiceTest {
     }
 
     @Test
-    /**
-     * R
-     * Y
-     * R
-     * Y
-     */
+            /**
+             * R
+             * Y
+             * R
+             * Y
+             */
     fun checkIfGameIsOver_incompleteBoardNoWinner_returnsFalse() {
         val game = generateGameForTest(moves = arrayOf(0, 0, 0, 0))
         game.status = GameStatus.INPROGRESS
@@ -193,18 +194,87 @@ class RulesServiceTest {
     }
 
     @Test
-    /**
-     * R Y R Y
-     * R Y R Y
-     * Y R Y Y
-     * R R Y R
-     */
+            /**
+             * R Y R Y
+             * R Y R Y
+             * Y R Y Y
+             * R R Y R
+             */
     fun checkIfGameIsOver_fullBoardNoWinner_returnsTrueMarksGameAsCompleteAndDoesNotSetWinningPlayer() {
-        val game = generateGameForTest(moves = arrayOf(0, 0, 1, 2, 1, 2, 3, 3, 0, 1, 0, 1, 2, 2, 3, 3))
+        val game =
+            generateGameForTest(moves = arrayOf(0, 0, 1, 2, 1, 2, 3, 3, 0, 1, 0, 1, 2, 2, 3, 3))
         val afterCheck = service.checkIfGameIsOver(game)
 
         Assert.assertEquals(afterCheck, true)
         Assert.assertEquals(game.status, GameStatus.COMPLETED)
         Assert.assertEquals(null, game.winningPlayerId)
+    }
+
+    @Test
+    fun changeStartingPlayer_gameInInitializedState_succeeds() {
+        val game = generateGameForTest()
+        val gameP1Id = game.playerOneId
+        val gameP2Id = game.playerTwoId
+
+        val result = service.changeStartingPlayer(game, startingPlayerId = gameP2Id)
+
+        Assert.assertEquals(result.status, Status.SUCCESS)
+        Assert.assertEquals(result.data!!.playerOneId, gameP2Id)
+        Assert.assertEquals(result.data!!.playerTwoId, gameP1Id)
+    }
+
+    @Test
+    fun changeStartingPlayer_gameHasStarted_fails() {
+        val game = generateGameForTest()
+        game.status = GameStatus.INPROGRESS
+
+        val result = service.changeStartingPlayer(game, startingPlayerId = game.playerTwoId)
+
+        Assert.assertEquals(result.status, Status.ERROR)
+        Assert.assertEquals(
+            result.message,
+            "Cannot change the starting player after a game has begun."
+        )
+    }
+
+    @Test
+    fun startGame_gameNotInInitializedState_fails() = runBlocking {
+        val game = generateGameForTest()
+        game.status = GameStatus.INPROGRESS
+
+        val result = service.startGame(game, game.playerOneId)
+        Assert.assertEquals(result.status, Status.ERROR)
+        Assert.assertEquals(
+            result.message,
+            "This game has already started."
+        )
+    }
+
+    @Test
+    fun startGame_currentPlayerIsPlayerOne_setsStatusAndWaitsForPlayersMove() = runBlocking {
+        val game = generateGameForTest()
+
+        val result = service.startGame(game, game.playerOneId)
+
+        Assert.assertEquals(result.status, Status.SUCCESS)
+        Assert.assertEquals(result.data!!.status, GameStatus.INPROGRESS)
+        Assert.assertEquals(result.data!!.moves.size, 0)
+    }
+
+    @Test
+    fun startGame_currentPlayerIsPlayerTwo_setsStatusAndCallsToServerForOpeningMove() = runBlocking {
+        val game = generateGameForTest()
+
+        val result = service.startGame(game, game.playerTwoId)
+
+        Assert.assertEquals(result.status, Status.SUCCESS)
+        Assert.assertEquals(result.data!!.status, GameStatus.INPROGRESS)
+        Assert.assertEquals(result.data!!.moves.size, 1)
+    }
+
+    @Test
+    fun makeMove_emptyBoard_validColumn_succeeds() {
+        val game = generateGameForTest()
+        game.status = GameStatus.INPROGRESS
     }
 }

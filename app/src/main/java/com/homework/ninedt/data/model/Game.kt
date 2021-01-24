@@ -49,7 +49,6 @@ data class Game(
     }
 
     fun addMove(column: Int) {
-        Log.i(TAG, "Adding move at column $column")
         val newMoves = moves.toMutableList()
         newMoves.add(column)
         moves = newMoves.toTypedArray()
@@ -66,7 +65,6 @@ data class Game(
     ) {
         val boardColumn = board[columnDropped]
         val nextEmptySlot = boardColumn.indexOfLast { space -> space == null }
-        Log.i(TAG, "Placing token for playerId $playerId at column $columnDropped and row $nextEmptySlot")
         boardColumn[nextEmptySlot] = playerId
     }
 
@@ -92,6 +90,5 @@ data class Game(
         // Hardcoded for now as dynamic building of a grid is a bigger effort to ensure
         // optimal performance. At least it's not a magic number this way :)
         const val GRID_SIZE: Int = 4
-        const val TAG = "Game"
     }
 }

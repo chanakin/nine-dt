@@ -21,19 +21,6 @@ class DatabaseConverter {
     }
 
     @TypeConverter
-    fun getLongArray(listOfLong: String?): Array<Long> {
-        return Gson().fromJson(
-            listOfLong,
-            object : TypeToken<Array<Long>>() {}.type
-        )
-    }
-
-    @TypeConverter
-    fun saveLongArray(listOfLong: Array<Long>): String {
-        return Gson().toJson(listOfLong)
-    }
-
-    @TypeConverter
     fun toGameStatus(value: String) = enumValueOf<GameStatus>(value)
 
     @TypeConverter

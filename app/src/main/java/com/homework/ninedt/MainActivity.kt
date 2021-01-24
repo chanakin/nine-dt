@@ -22,15 +22,11 @@ class MainActivity : AppCompatActivity() {
             when (status) {
                 GameStatus.INITIALIZED -> {
                     showStartGameDialog()
-                    supportFragmentManager.findFragmentByTag(GameOverFragment.TAG)?.let {
-                        supportFragmentManager.beginTransaction().hide(it).commitNow()
-                    }
+                    hideGameOver()
                 }
                 GameStatus.COMPLETED -> showGameOver()
                 else -> {
-                    supportFragmentManager.findFragmentByTag(GameOverFragment.TAG)?.let {
-                        supportFragmentManager.beginTransaction().hide(it).commitNow()
-                    }
+                    hideGameOver()
                 }
             }
         })
@@ -39,6 +35,12 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.board_container, BoardFragment.newInstance(), BoardFragment.TAG)
                 .commitNow()
+        }
+    }
+
+    private fun hideGameOver() {
+        supportFragmentManager.findFragmentByTag(GameOverFragment.TAG)?.let {
+            supportFragmentManager.beginTransaction().hide(it).commitNow()
         }
     }
 

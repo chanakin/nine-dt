@@ -1,11 +1,10 @@
 package com.homework.ninedt.data.repository
 
-import android.util.Log
 import com.homework.ninedt.data.api.Response
+import com.homework.ninedt.data.api.RulesService
 import com.homework.ninedt.data.api.Status
 import com.homework.ninedt.data.database.GameDao
 import com.homework.ninedt.data.model.Game
-import com.homework.ninedt.data.api.RulesService
 import com.homework.ninedt.data.model.GameStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -29,12 +28,16 @@ class GameRepository @Inject constructor(
 
     override suspend fun createGame(playerOneId: Long, playerTwoId: Long): Long {
         return withContext(Dispatchers.IO) {
-            return@withContext gameDao.createNewGame(Game(playerOneId = playerOneId, playerTwoId = playerTwoId))
+            return@withContext gameDao.createNewGame(
+                Game(
+                    playerOneId = playerOneId,
+                    playerTwoId = playerTwoId
+                )
+            )
         }
     }
 
     override suspend fun updateGame(game: Game): Int {
-        Log.i(TAG, "Updating game $game")
         game.lastModified = Date()
         return gameDao.updateGame(game)
     }
@@ -44,7 +47,6 @@ class GameRepository @Inject constructor(
             val response = rulesService.startGame(game, currentPlayerId)
 
             if (response.status == Status.SUCCESS) {
-                Log.i(TAG, "Starting game now $response.data")
                 updateGame(response.data!!)
             }
 
@@ -55,7 +57,6 @@ class GameRepository @Inject constructor(
     override suspend fun makeMove(columnDropped: Int, game: Game): Response<Game> {
         return withContext(Dispatchers.IO) {
             var response = rulesService.makeMove(columnDropped, game)
-            Log.i(TAG, "Response received after making move: $response")
 
             // This is a little weird, but we're simulating additional trips to the server
             // so that the user gets clear signals when it is their turn vs the computer

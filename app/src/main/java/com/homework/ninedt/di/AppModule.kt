@@ -103,20 +103,18 @@ object AppModule {
         val playerId = 1L
         val computerId = 2L
 
-        val newGameId =
-            gameDaoProvider.get()
-                .createNewGame(
-                    Game(
-                        playerOneId = playerId,
-                        playerTwoId = computerId
-                    )
+        gameDaoProvider.get()
+            .createNewGame(
+                Game(
+                    playerOneId = playerId,
+                    playerTwoId = computerId
                 )
+            )
 
         context.getSharedPreferences(
             context.getString(R.string.shared_prefs_file_key),
             Context.MODE_PRIVATE
         ).edit()
-            .putLong(context.getString(R.string.game_id_key), newGameId)
             .putLong(context.getString(R.string.player_id), 1L)
             .putLong(context.getString(R.string.computer_AI_player_id), 2L)
             .apply()
