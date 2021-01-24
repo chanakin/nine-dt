@@ -1,14 +1,17 @@
 package com.homework.ninedt.data.utils
 
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
+import androidx.fragment.app.FragmentManager
 
-fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
-    observe(lifecycleOwner, object : Observer<T> {
-        override fun onChanged(t: T?) {
-            observer.onChanged(t)
-            removeObserver(this)
-        }
-    })
+// TODO I may not need this anymore
+//fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
+//    observe(lifecycleOwner, object : Observer<T> {
+//        override fun onChanged(t: T?) {
+//            observer.onChanged(t)
+//            removeObserver(this)
+//        }
+//    })
+//}
+
+fun FragmentManager.fragmentAdded(tag: String): Boolean {
+    return findFragmentByTag(tag) != null
 }

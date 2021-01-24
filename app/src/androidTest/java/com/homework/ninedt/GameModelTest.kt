@@ -36,7 +36,7 @@ class GameModelTest {
     fun moveBeforeZero_throwsGameException() {
         // SETUP
         val badMoves = arrayOf(-1)
-        val testGame = Game(moves = badMoves, startingPlayer = 1)
+        val testGame = Game(moves = badMoves, startingPlayerId = 1)
 
         thrown.expect(GameException::class.java)
         thrown.expectMessage("Invalid move was encountered; column index -1 is outside the bounds of the board.")
@@ -48,7 +48,7 @@ class GameModelTest {
     fun moveBeyondThree_throwsGameException() {
         // SETUP
         val badMoves = arrayOf(4)
-        val testGame = Game(moves = badMoves, startingPlayer = 1)
+        val testGame = Game(moves = badMoves, startingPlayerId = 1)
 
         thrown.expect(GameException::class.java)
         thrown.expectMessage("Invalid move was encountered; column index 4 is outside the bounds of the board.")
@@ -60,7 +60,7 @@ class GameModelTest {
     fun singleValidMove_succeedsInCreatingBoard() {
         // SETUP
         val validMoves = arrayOf(3)
-        val testGame = Game(moves = validMoves, startingPlayer = 1)
+        val testGame = Game(moves = validMoves, startingPlayerId = 1)
         val board = testGame.createBoard()
 
         board.forEachIndexed { colIndex, col ->
@@ -78,7 +78,7 @@ class GameModelTest {
     fun twoMovesSameColumn_succeedsInCreatingBoard() {
         // SETUP
         val validMoves = arrayOf(3, 3)
-        val testGame = Game(moves = validMoves, startingPlayer = 1)
+        val testGame = Game(moves = validMoves, startingPlayerId = 1)
         val board = testGame.createBoard()
 
         board.forEachIndexed { colIndex, col ->
@@ -101,7 +101,7 @@ class GameModelTest {
     fun twoMovesDifferentColumn_succeedsInCreatingBoard() {
         // SETUP
         val validMoves = arrayOf(3, 2)
-        val testGame = Game(moves = validMoves, startingPlayer = 1)
+        val testGame = Game(moves = validMoves, startingPlayerId = 1)
         val board = testGame.createBoard()
 
         board.forEachIndexed { colIndex, col ->
@@ -122,7 +122,7 @@ class GameModelTest {
     fun multipleMovesSameAndDifferentColumns_succeedsInCreatingBoard() {
         // SETUP
         val validMoves = arrayOf(3, 2, 3, 1, 3, 3)
-        val testGame = Game(moves = validMoves, startingPlayer = 2)
+        val testGame = Game(moves = validMoves, startingPlayerId = 2)
         val board = testGame.createBoard()
 
         board.forEachIndexed { colIndex, col ->

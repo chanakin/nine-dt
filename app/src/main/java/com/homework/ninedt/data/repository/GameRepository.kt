@@ -1,10 +1,14 @@
 package com.homework.ninedt.data.repository
 
 import android.util.Log
-import com.homework.ninedt.data.api.NineDTApiService
+import com.homework.ninedt.data.api.Response
+import com.homework.ninedt.data.api.Status
 import com.homework.ninedt.data.database.GameDao
 import com.homework.ninedt.data.model.Game
-import kotlinx.coroutines.flow.*
+import com.homework.ninedt.data.model.RulesService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -15,43 +19,60 @@ import javax.inject.Singleton
 @Singleton
 class GameRepository @Inject constructor(
     private val gameDao: GameDao,
-    private val gameService: NineDTApiService
+    private val rulesService: RulesService
 ) : GameDataSource {
 
     override fun getGame(id: Long): Flow<Game?> = gameDao.getGame(id)
 
     override fun getLastModifiedGameId(): Flow<Long?> = gameDao.getLastModifiedGameId()
 
-    override suspend fun createGame(game: Game): Long {
-        Log.i(TAG, "Creating a new game $game")
-        return gameDao.createNewGame(game)
+    override suspend fun createGame(): Long {
+        return gameDao.createNewGame(Game())
     }
 
-    override suspend fun updateGame(game: Game) {
+    override suspend fun updateGame(game: Game): Int {
         Log.i(TAG, "Updating game $game")
         game.lastModified = Date()
-        val updatedRow = gameDao.updateGame(game)
-        Log.i(TAG, "Updated row count $updatedRow")
+        return gameDao.updateGame(game)
     }
 
-    override suspend fun getOtherPlayerMove(game: Game) {
-        Log.i(TAG, "Sending moves: $game.moves")
-        game.moves = gameService.getNextMove(
-            game.moves.joinToString(
-                prefix = "[",
-                postfix = "]",
-                separator = ","
-            )
-        )
-        Log.i(TAG, "Got moves back: ${game.moves}")
-        updateGame(game)
+    override suspend fun startGame(game: Game, currentPlayerId: Long): Response<Game> {
+        return withContext(Dispatchers.IO) {
+            val response = rulesService.startGame(game, currentPlayerId)
+
+            if (response.status == Status.SUCCESS) {
+                updateGame(response.data!!)
+            }
+
+            return@withContext response
+        }
     }
 
-    override suspend fun saveDroppedToken(game: Game, column: Int) {
-        Log.i(TAG, "Saving dropped token for $game at column $column")
+    override suspend fun makeMove(columnDropped: Int, game: Game): Response<Game> {
+        return withContext(Dispatchers.IO) {
+            val response = rulesService.makeMove(columnDropped, game)
+            Log.i(TAG, "Response received after making move: $response")
 
-        updateGame(game)
+            if (response.status == Status.SUCCESS) {
+                updateGame(response.data!!)
+            }
+
+            return@withContext Response.success(response.data!!)
+        }
     }
+
+    override suspend fun changeStartingPlayer(game: Game, startingPlayerId: Long): Response<Game> {
+        return withContext(Dispatchers.IO) {
+            val response = rulesService.changeStartingPlayer(game, startingPlayerId)
+
+            if (response.status == Status.SUCCESS) {
+                updateGame(response.data!!)
+            }
+
+            return@withContext response
+        }
+    }
+
 
     companion object {
         const val TAG = "GameRepository"

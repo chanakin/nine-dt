@@ -64,11 +64,7 @@ object AppModule {
                         super.onCreate(db)
                         // Initialize the database with the first game
                         ioThread {
-                            val newGameId = gameDaoProvider.get().createNewGame(Game())
-                            context.getSharedPreferences(
-                                context.getString(R.string.shared_prefs_file_key),
-                                Context.MODE_PRIVATE
-                            ).edit().putLong(context.getString(R.string.game_id_key), newGameId)
+                            initializeDatabase(context, gameDaoProvider)
                         }
                     }
 
@@ -81,14 +77,8 @@ object AppModule {
                         ioThread {
                             val gameDao = gameDaoProvider.get()
                             if (gameDao.gameCount() == 0) {
-                                val newGameId = gameDaoProvider.get().createNewGame(Game())
-                                context.getSharedPreferences(
-                                    context.getString(R.string.shared_prefs_file_key),
-                                    Context.MODE_PRIVATE
-                                ).edit().putLong(context.getString(R.string.game_id_key), newGameId)
+                                initializeDatabase(context, gameDaoProvider)
                             }
-
-
                         }
                     }
                 }
@@ -103,10 +93,35 @@ object AppModule {
         return database.gameDao()
     }
 
-
     @Singleton
     @Provides
     fun provideIoDispatcher() = Dispatchers.IO
+
+    private fun initializeDatabase(context: Context, gameDaoProvider: Provider<GameDao>) {
+        // TODO I would propose extending this to build actual "Player" objects
+        // into the model for a more robust gaming experience (this would enable online support,
+        // or even just local multiplayer support)
+        val playerId = 1L
+        val computerId = 2L
+
+        val newGameId =
+            gameDaoProvider.get()
+                .createNewGame(
+                    Game(
+                        playerIds = arrayOf(playerId, computerId),
+                        startingPlayerId = playerId
+                    )
+                )
+
+        context.getSharedPreferences(
+            context.getString(R.string.shared_prefs_file_key),
+            Context.MODE_PRIVATE
+        ).edit()
+            .putLong(context.getString(R.string.game_id_key), newGameId)
+            .putLong(context.getString(R.string.player_id), 1L)
+            .putLong(context.getString(R.string.computer_AI_player_id), 2L)
+            .commit()
+    }
 }
 
 ///**

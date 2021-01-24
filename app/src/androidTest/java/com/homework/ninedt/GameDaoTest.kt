@@ -8,7 +8,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.homework.ninedt.data.database.GameDao
 import com.homework.ninedt.data.database.GameDatabase
 import com.homework.ninedt.data.model.Game
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers
@@ -48,7 +47,7 @@ class DatabaseTest {
     @Test
     fun creatingGameInsertsNewGame() = runBlocking {
         // SETUP
-        val game = Game(moves = arrayOf(1), startingPlayer = 2)
+        val game = Game(moves = arrayOf(1), startingPlayerId = 2)
         val id = gameDao.createNewGame(game)
         game.id = id
 
@@ -91,7 +90,7 @@ class DatabaseTest {
 
         val latest = gameDao.getGame(gameDao.getLastModifiedGameId().first()).first()!!
         latest.moves = arrayOf(1, 2, 3, 4)
-        latest.startingPlayer = 2
+        latest.startingPlayerId = 2
         latest.lastModified = Date()
 
         val updatedRows = gameDao.updateGame(latest)

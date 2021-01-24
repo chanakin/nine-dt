@@ -1,11 +1,10 @@
 package com.homework.ninedt
 
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.homework.ninedt.data.utils.observeOnce
+import com.homework.ninedt.data.model.GameStatus
+import com.homework.ninedt.data.utils.fragmentAdded
 import com.homework.ninedt.ui.main.view.BoardFragment
 import com.homework.ninedt.ui.main.view.StartGameDialogFragment
 import com.homework.ninedt.ui.main.viewmodel.BoardViewModel
@@ -20,19 +19,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.main_activity)
 
         if (savedInstanceState == null) {
-            boardViewModel.game.observeOnce(this, { game ->
-                Log.i("MainActivity", "Game update received $game")
-                Toast.makeText(
-                    baseContext,
-                    "Received update for game. Is it ready: ${game}",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                if (game.awaitingStart()) {
+            boardViewModel.status.observe(this, { status ->
+                if (status == GameStatus.INITIALIZED
+                    && !supportFragmentManager.fragmentAdded(StartGameDialogFragment.TAG)
+                ) {
                     StartGameDialogFragment().show(
                         supportFragmentManager,
                         StartGameDialogFragment.TAG
                     )
+                } else if (status == GameStatus.COMPLETED) {
+
                 }
             })
 
@@ -41,5 +37,4 @@ class MainActivity : AppCompatActivity() {
                 .commitNow()
         }
     }
-
 }

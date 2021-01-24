@@ -11,4 +11,5 @@
     <string name="token_desc">Game token</string>
     <string name="your_move_instructions">Select a column to drop your token in</string>
     <string name="other_player_move_instructions">Please wait while the other player makes their move</string>
+    <string name="invalid_move">Invalid move! Try again</string>
 </resources>

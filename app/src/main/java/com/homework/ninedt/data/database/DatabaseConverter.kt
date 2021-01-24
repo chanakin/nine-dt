@@ -4,9 +4,6 @@ import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.homework.ninedt.data.model.GameStatus
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.util.*
 
 class DatabaseConverter {
@@ -19,8 +16,21 @@ class DatabaseConverter {
     }
 
     @TypeConverter
-    fun saveIntArray(listofInt: Array<Int>): String {
-        return Gson().toJson(listofInt)
+    fun saveIntArray(listOfInt: Array<Int>): String {
+        return Gson().toJson(listOfInt)
+    }
+
+    @TypeConverter
+    fun getLongArray(listOfLong: String?): Array<Long> {
+        return Gson().fromJson(
+            listOfLong,
+            object : TypeToken<Array<Long>>() {}.type
+        )
+    }
+
+    @TypeConverter
+    fun saveLongArray(listOfLong: Array<Long>): String {
+        return Gson().toJson(listOfLong)
     }
 
     @TypeConverter

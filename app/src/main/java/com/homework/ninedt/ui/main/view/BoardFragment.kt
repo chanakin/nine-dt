@@ -9,6 +9,7 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.homework.ninedt.R
+import com.homework.ninedt.data.model.GameStatus
 import com.homework.ninedt.databinding.BoardFragmentBinding
 import com.homework.ninedt.ui.main.viewmodel.BoardViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,9 +34,14 @@ class BoardFragment : Fragment() {
         _binding = BoardFragmentBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        viewModel.board.observe(viewLifecycleOwner) { board ->
-            Log.i("BoardFragment", "Redrawing board... $board")
-            redrawBoard(board)
+        viewModel.game.observe(viewLifecycleOwner) { game ->
+            Log.i("BoardFragment", "Redrawing board... $game")
+            game.startingPlayerId?.let {
+                redrawBoard(game.board, it)
+            }
+
+            binding.turnInstructions.visibility =
+                if (game.status == GameStatus.INITIALIZED) View.INVISIBLE else View.VISIBLE
         }
 
         viewModel.isMyTurn.observe(viewLifecycleOwner) { myTurn ->
@@ -43,6 +49,10 @@ class BoardFragment : Fragment() {
             enablePlay(myTurn)
             binding.turnInstructions.text =
                 if (myTurn) getString(R.string.your_move_instructions) else getString(R.string.other_player_move_instructions)
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
+            binding.errorMessage.text = errorMessage
         }
 
         setOnClickListenersForDroppingToken()
@@ -74,7 +84,7 @@ class BoardFragment : Fragment() {
         binding.column3.isEnabled = enable
     }
 
-    private fun redrawBoard(board: Array<Array<Int>>) {
+    private fun redrawBoard(board: Array<Array<Long?>>, startingPlayerId: Long) {
         view?.let { boardView ->
             board.forEachIndexed { columnIndex, column ->
                 column.forEachIndexed { rowIndex, _ ->
@@ -88,13 +98,14 @@ class BoardFragment : Fragment() {
                             requireContext().packageName
                         )
 
+                    // Player 1 is red, player 2 is yellow
                     val tokenView = boardView.findViewById<ImageView>(correspondingTokenViewResId)
-                    // Player 1 is red, Player 2 is yellow
                     val whichPlayerToken = when (board[columnIndex][rowIndex]) {
-                        1 -> R.drawable.red_token
-                        2 -> R.drawable.yellow_token
-                        else -> R.drawable.empty_token
+                        startingPlayerId -> R.drawable.red_token
+                        null -> R.drawable.empty_token
+                        else -> R.drawable.yellow_token
                     }
+
                     tokenView.setImageResource(whichPlayerToken)
                 }
             }

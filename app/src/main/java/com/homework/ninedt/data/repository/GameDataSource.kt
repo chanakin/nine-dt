@@ -1,5 +1,6 @@
 package com.homework.ninedt.data.repository
 
+import com.homework.ninedt.data.api.Response
 import com.homework.ninedt.data.model.Game
 import kotlinx.coroutines.flow.Flow
 
@@ -11,12 +12,14 @@ interface GameDataSource {
 
     fun getLastModifiedGameId(): Flow<Long?>
 
-    suspend fun updateGame(game: Game)
+    suspend fun updateGame(game: Game): Int
 
-    suspend fun createGame(game: Game): Long
+    suspend fun createGame(): Long
 
-    suspend fun getOtherPlayerMove(game: Game)
+    suspend fun startGame(game: Game, currentPlayerId: Long): Response<Game>
 
-    suspend fun saveDroppedToken(game: Game, column: Int)
+    suspend fun makeMove(columnDropped: Int, game: Game): Response<Game>
+
+    suspend fun changeStartingPlayer(game: Game, startingPlayerId: Long): Response<Game>
 }
 
