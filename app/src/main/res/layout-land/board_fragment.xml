@@ -15,7 +15,7 @@
         android:src="@drawable/empty_token"
         app:layout_constraintBottom_toTopOf="@+id/row_1_column_0"
         app:layout_constraintEnd_toStartOf="@+id/row_0_column_1"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
@@ -49,9 +49,9 @@
         android:id="@+id/row_1_column_0"
         style="@style/StartTokenView"
         android:src="@drawable/empty_token"
+        app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintBottom_toTopOf="@+id/row_2_column_0"
         app:layout_constraintEnd_toStartOf="@+id/row_1_column_1"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/row_0_column_0" />
 
     <ImageView
@@ -86,9 +86,9 @@
         android:id="@+id/row_2_column_0"
         style="@style/StartTokenView"
         android:src="@drawable/empty_token"
+        app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintBottom_toTopOf="@+id/row_3_column_0"
         app:layout_constraintEnd_toStartOf="@+id/row_2_column_1"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/row_1_column_0" />
 
     <ImageView
@@ -126,10 +126,10 @@
         android:id="@+id/row_3_column_0"
         style="@style/StartTokenView"
         android:src="@drawable/empty_token"
+        app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/row_3_column_1"
         app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/row_2_column_0"
         app:layout_constraintVertical_chainStyle="packed" />
 
@@ -172,9 +172,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/row_3_column_0"
-        app:layout_constraintEnd_toStartOf="@id/row_0_column_1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/turn_instructions" />
+        app:layout_constraintEnd_toEndOf="@id/row_0_column_0"
+        app:layout_constraintStart_toStartOf="@id/row_0_column_0"
+        app:layout_constraintTop_toTopOf="@id/row_0_column_0" />
 
     <Button
         android:id="@+id/column_1"
@@ -182,9 +182,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/row_3_column_1"
-        app:layout_constraintEnd_toStartOf="@id/row_0_column_2"
-        app:layout_constraintStart_toEndOf="@id/row_0_column_0"
-        app:layout_constraintTop_toBottomOf="@id/turn_instructions" />
+        app:layout_constraintEnd_toEndOf="@id/row_0_column_1"
+        app:layout_constraintStart_toStartOf="@id/row_0_column_1"
+        app:layout_constraintTop_toTopOf="@id/row_0_column_1" />
 
     <Button
         android:id="@+id/column_2"
@@ -192,9 +192,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/row_3_column_2"
-        app:layout_constraintEnd_toStartOf="@id/row_0_column_3"
-        app:layout_constraintStart_toEndOf="@id/row_0_column_1"
-        app:layout_constraintTop_toBottomOf="@id/turn_instructions" />
+        app:layout_constraintEnd_toEndOf="@id/row_0_column_2"
+        app:layout_constraintStart_toStartOf="@id/row_0_column_2"
+        app:layout_constraintTop_toTopOf="@id/row_0_column_2" />
 
     <Button
         android:id="@+id/column_3"
@@ -202,23 +202,30 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/row_3_column_3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/row_0_column_2"
-        app:layout_constraintTop_toBottomOf="@id/turn_instructions" />
+        app:layout_constraintEnd_toEndOf="@id/row_0_column_3"
+        app:layout_constraintStart_toStartOf="@id/row_0_column_3"
+        app:layout_constraintTop_toTopOf="@id/row_0_column_3" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
 
     <TextView
         android:id="@+id/turn_instructions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:elevation="10dp"
-        android:text="@string/your_move_instructions"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:textAlignment="center"
-        android:textColor="@android:color/white"
+        android:gravity="center"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@id/row_0_column_0"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/your_move_instructions" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

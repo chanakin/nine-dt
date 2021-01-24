@@ -14,7 +14,7 @@ interface GameDataSource {
 
     suspend fun updateGame(game: Game): Int
 
-    suspend fun createGame(): Long
+    suspend fun createGame(playerOneId: Long, playerTwoId: Long): Long
 
     suspend fun startGame(game: Game, currentPlayerId: Long): Response<Game>
 

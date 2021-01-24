@@ -14,8 +14,8 @@ data class Game(
     @PrimaryKey(autoGenerate = true) var id: Long = 0,
     var moves: Array<Int> = emptyArray(),
     var status: GameStatus = GameStatus.INITIALIZED,
-    var startingPlayerId: Long? = null,
-    val playerIds: Array<Long> = emptyArray(),
+    var playerOneId: Long,
+    var playerTwoId: Long,
     val createdDate: Date = Date(),
     var lastModified: Date = Date(),
     var winningPlayerId: Long? = null
@@ -39,13 +39,10 @@ data class Game(
             }
         }
 
-        startingPlayerId?.let { start ->
-            val secondPlayer = playerIds.find { playerId -> startingPlayerId != playerId }!!
-
-            moves.forEachIndexed { index, columnDropped ->
-                val player = if (index % 2 == 0) start else secondPlayer
-                placeTokenOnBoard(board, columnDropped, player)
-            }
+        moves.forEachIndexed { index, columnDropped ->
+            // Index is 0-based, unlike the length of the moves array below
+            val player = if (index % 2 == 0) playerOneId else playerTwoId
+            placeTokenOnBoard(board, columnDropped, player)
         }
 
         return board
@@ -58,11 +55,8 @@ data class Game(
         moves = newMoves.toTypedArray()
 
         // Place onto the board
-        startingPlayerId?.let { startingPlayer ->
-            val secondPlayer = playerIds.find { playerId -> startingPlayerId != playerId }!!
-            val playerId = if (moves.size % 2 == 0) startingPlayer else secondPlayer
-            placeTokenOnBoard(board, column, playerId)
-        }
+        val playerId = if (moves.size % 2 == 1) playerOneId else playerTwoId
+        placeTokenOnBoard(board, column, playerId)
     }
 
     private fun placeTokenOnBoard(
@@ -72,6 +66,7 @@ data class Game(
     ) {
         val boardColumn = board[columnDropped]
         val nextEmptySlot = boardColumn.indexOfLast { space -> space == null }
+        Log.i(TAG, "Placing token for playerId $playerId at column $columnDropped and row $nextEmptySlot")
         boardColumn[nextEmptySlot] = playerId
     }
 

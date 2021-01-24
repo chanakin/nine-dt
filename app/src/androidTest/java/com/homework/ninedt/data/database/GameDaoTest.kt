@@ -7,6 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.homework.ninedt.data.database.GameDao
 import com.homework.ninedt.data.database.GameDatabase
+import com.homework.ninedt.data.generateGameForTest
 import com.homework.ninedt.data.model.Game
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -44,10 +45,12 @@ class DatabaseTest {
         db.close()
     }
 
+
+
     @Test
     fun creatingGameInsertsNewGame() = runBlocking {
         // SETUP
-        val game = Game(moves = arrayOf(1), startingPlayerId = 2)
+        val game = generateGameForTest(arrayOf(1))
         val id = gameDao.createNewGame(game)
         game.id = id
 
@@ -62,8 +65,8 @@ class DatabaseTest {
     @Test
     fun createMultipleGames_loadAllSucceeds() = runBlocking {
         // SETUP
-        repeat(5) {
-            gameDao.createNewGame(Game(moves = arrayOf(it)))
+        repeat(3) {
+            gameDao.createNewGame(generateGameForTest(moves = arrayOf(it)))
         }
 
         // VERIFY
@@ -75,7 +78,7 @@ class DatabaseTest {
         var lastIdCreated: Long = 0
 
         repeat(3) {
-            lastIdCreated = gameDao.createNewGame(Game(moves = arrayOf(it)))
+            lastIdCreated = gameDao.createNewGame(generateGameForTest(moves = arrayOf(it)))
         }
 
         val byLatest = gameDao.getGame(gameDao.getLastModifiedGameId().first()).first()
@@ -85,12 +88,13 @@ class DatabaseTest {
     @Test
     fun updatingGame_multipleGamesInDB_updatesGame() = runBlocking {
         repeat(3) {
-            gameDao.createNewGame(Game())
+            gameDao.createNewGame(generateGameForTest())
         }
 
         val latest = gameDao.getGame(gameDao.getLastModifiedGameId().first()).first()!!
         latest.moves = arrayOf(1, 2, 3, 4)
-        latest.startingPlayerId = 2
+        latest.playerOneId = 2L
+        latest.playerTwoId = 1L
         latest.lastModified = Date()
 
         val updatedRows = gameDao.updateGame(latest)
@@ -102,18 +106,20 @@ class DatabaseTest {
 
     @Test
     fun updatingGame_gameDoesNotExistInDatabase_returnsNoRowsChanged() = runBlocking {
-        val existingId = gameDao.createNewGame(Game())
-        val nonexistentId = existingId + 1;
-        val updatedRows = gameDao.updateGame(Game(id = nonexistentId))
+        val existingId = gameDao.createNewGame(generateGameForTest())
+        val nonexistentId = existingId + 1
+        val nonexistentGame = Game(id = nonexistentId, playerOneId = 1L, playerTwoId = 2L)
+        val updatedRows = gameDao.updateGame(nonexistentGame)
         assertThat(updatedRows, CoreMatchers.equalTo(0))
     }
 
     @Test
     fun deletingGame_gameDoesNotExistInDatabase_returnsNoRowsChanged() = runBlocking {
-        val existingId = gameDao.createNewGame(Game())
-        val nonexistentId = existingId + 1;
+        val existingId = gameDao.createNewGame(generateGameForTest())
+        val nonexistentId = existingId + 1
 
-        val deletedRows = gameDao.deleteGame(Game(id = nonexistentId))
+        val deletedRows =
+            gameDao.deleteGame(Game(id = nonexistentId, playerOneId = 1L, playerTwoId = 2L))
 
         assertThat(deletedRows, CoreMatchers.equalTo(0))
         assertThat(gameDao.getAllGames().first().size, CoreMatchers.equalTo(1))
@@ -124,7 +130,7 @@ class DatabaseTest {
         val realIds = mutableListOf<Long>()
 
         repeat(3) {
-            realIds.add(gameDao.createNewGame(Game()))
+            realIds.add(gameDao.createNewGame(generateGameForTest()))
         }
 
         val preDeleteGamesList = gameDao.getAllGames().first()
@@ -133,7 +139,7 @@ class DatabaseTest {
 
         assertThat(deletedRows, CoreMatchers.equalTo(1))
         assertThat(postDeleteGamesList.size, CoreMatchers.equalTo(2))
-        assertThat(postDeleteGamesList, CoreMatchers.equalTo(preDeleteGamesList.subList(1,3)))
+        assertThat(postDeleteGamesList, CoreMatchers.equalTo(preDeleteGamesList.subList(1, 3)))
     }
 
     @Test

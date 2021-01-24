@@ -24,7 +24,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Provider
 import javax.inject.Singleton
 
-
 @Module
 @InstallIn(ApplicationComponent::class)
 object AppModule {
@@ -32,9 +31,9 @@ object AppModule {
     @Singleton
     @Provides
     fun provideOkHttpClient(): OkHttpClient {
-        val intercepter = HttpLoggingInterceptor()
-        intercepter.level = HttpLoggingInterceptor.Level.BODY
-        return OkHttpClient.Builder().addInterceptor(intercepter).build()
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+        return OkHttpClient.Builder().addInterceptor(interceptor).build()
     }
 
     @Singleton
@@ -71,12 +70,12 @@ object AppModule {
                     override fun onOpen(db: SupportSQLiteDatabase) {
                         super.onOpen(db)
 
-                        // Ensure there is always one game in the database
-                        // This will capture the case of the app storage
-                        // being cleared
                         ioThread {
                             val gameDao = gameDaoProvider.get()
                             if (gameDao.gameCount() == 0) {
+                                // Ensure there is always one game in the database
+                                // This will capture the case of the app storage
+                                // being cleared
                                 initializeDatabase(context, gameDaoProvider)
                             }
                         }
@@ -108,8 +107,8 @@ object AppModule {
             gameDaoProvider.get()
                 .createNewGame(
                     Game(
-                        playerIds = arrayOf(playerId, computerId),
-                        startingPlayerId = playerId
+                        playerOneId = playerId,
+                        playerTwoId = computerId
                     )
                 )
 
@@ -120,26 +119,6 @@ object AppModule {
             .putLong(context.getString(R.string.game_id_key), newGameId)
             .putLong(context.getString(R.string.player_id), 1L)
             .putLong(context.getString(R.string.computer_AI_player_id), 2L)
-            .commit()
+            .apply()
     }
 }
-
-///**
-// * The binding for GameRepository is on its own module so that we can replace it easily in tests.
-// */
-//@Module
-//@InstallIn(ApplicationComponent::class)
-//object GameRepositoryModule {
-//
-//    @Singleton
-//    @Provides
-//    fun provideGameRepository(
-//        @AppModule.RemoteTasksDataSource remoteTasksDataSource: TasksDataSource,
-//        @AppModule.LocalTasksDataSource localTasksDataSource: TasksDataSource,
-//        ioDispatcher: CoroutineDispatcher
-//    ): TasksRepository {
-//        return DefaultTasksRepository(
-//            remoteTasksDataSource, localTasksDataSource, ioDispatcher
-//        )
-//    }
-//}

@@ -8,10 +8,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.google.android.material.snackbar.Snackbar
 import com.homework.ninedt.R
 import com.homework.ninedt.data.model.GameStatus
 import com.homework.ninedt.databinding.BoardFragmentBinding
-import com.homework.ninedt.ui.main.viewmodel.BoardViewModel
+import com.homework.ninedt.ui.main.viewmodel.GameViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,7 +23,7 @@ class BoardFragment : Fragment() {
         fun newInstance() = BoardFragment()
     }
 
-    private val viewModel: BoardViewModel by activityViewModels()
+    private val viewModel: GameViewModel by activityViewModels()
 
     private var _binding: BoardFragmentBinding? = null
     private val binding get() = _binding!!
@@ -36,12 +37,15 @@ class BoardFragment : Fragment() {
 
         viewModel.game.observe(viewLifecycleOwner) { game ->
             Log.i("BoardFragment", "Redrawing board... $game")
-            game.startingPlayerId?.let {
-                redrawBoard(game.board, it)
-            }
+            redrawBoard(game.board, game.playerOneId, game.playerTwoId)
 
             binding.turnInstructions.visibility =
                 if (game.status == GameStatus.INITIALIZED) View.INVISIBLE else View.VISIBLE
+        }
+
+        viewModel.status.observe(viewLifecycleOwner) { status ->
+            binding.turnInstructions.visibility =
+                if (status != GameStatus.INPROGRESS) View.INVISIBLE else View.VISIBLE
         }
 
         viewModel.isMyTurn.observe(viewLifecycleOwner) { myTurn ->
@@ -52,7 +56,9 @@ class BoardFragment : Fragment() {
         }
 
         viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
-            binding.errorMessage.text = errorMessage
+            if (errorMessage != null) {
+                Snackbar.make(view, errorMessage, Snackbar.LENGTH_LONG).show()
+            }
         }
 
         setOnClickListenersForDroppingToken()
@@ -84,7 +90,7 @@ class BoardFragment : Fragment() {
         binding.column3.isEnabled = enable
     }
 
-    private fun redrawBoard(board: Array<Array<Long?>>, startingPlayerId: Long) {
+    private fun redrawBoard(board: Array<Array<Long?>>, playerOneId: Long, playerTwoId: Long) {
         view?.let { boardView ->
             board.forEachIndexed { columnIndex, column ->
                 column.forEachIndexed { rowIndex, _ ->
@@ -101,9 +107,9 @@ class BoardFragment : Fragment() {
                     // Player 1 is red, player 2 is yellow
                     val tokenView = boardView.findViewById<ImageView>(correspondingTokenViewResId)
                     val whichPlayerToken = when (board[columnIndex][rowIndex]) {
-                        startingPlayerId -> R.drawable.red_token
-                        null -> R.drawable.empty_token
-                        else -> R.drawable.yellow_token
+                        playerOneId -> R.drawable.red_token
+                        playerTwoId -> R.drawable.yellow_token
+                        else -> R.drawable.empty_token
                     }
 
                     tokenView.setImageResource(whichPlayerToken)

@@ -7,10 +7,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.homework.ninedt.R
-import com.homework.ninedt.ui.main.viewmodel.BoardViewModel
+import com.homework.ninedt.ui.main.viewmodel.GameViewModel
 
 class StartGameDialogFragment : DialogFragment() {
-    private val viewModel: BoardViewModel by activityViewModels()
+    private val viewModel: GameViewModel by activityViewModels()
 
     companion object {
         const val TAG = "StartGameDialogFragment"
@@ -31,7 +31,7 @@ class StartGameDialogFragment : DialogFragment() {
             ).getLong(it.getString(R.string.computer_AI_player_id), 2L)
         } ?: 2L
 
-        return MaterialAlertDialogBuilder(requireContext())
+        val dialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.start_game_message)
             .setSingleChoiceItems(
                 R.array.start_game_starting_player_options,
@@ -41,7 +41,6 @@ class StartGameDialogFragment : DialogFragment() {
                     when (optionSelected) {
                         0 -> myPlayerId
                         1 -> computerPlayerId
-                        2 -> listOf(myPlayerId, computerPlayerId).random()
                         else -> myPlayerId
                     }
                 )
@@ -50,7 +49,11 @@ class StartGameDialogFragment : DialogFragment() {
                 viewModel.startGame()
                 dismiss()
             }
-            .setCancelable(false)
             .create()
+
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.setCancelable(false)
+        isCancelable = false
+        return dialog
     }
 }

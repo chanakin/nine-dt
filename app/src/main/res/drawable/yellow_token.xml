@@ -5,11 +5,11 @@
     android:thicknessRatio="2"
     android:useLevel="false">
     <gradient
-        android:endColor="#c8b900"
+        android:endColor="@color/yellowTokenEdge"
         android:gradientRadius="@dimen/token_gradient_radius"
-        android:startColor="#ffeb3b"
+        android:startColor="@color/yellowToken"
         android:type="radial" />
     <stroke
         android:width="@dimen/token_outer_circle"
-        android:color="#c8b900" />
+        android:color="@color/yellowTokenEdge" />
 </shape>

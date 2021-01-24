@@ -6,7 +6,6 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
     <style name="TokenView">
         <item name="layout_constraintHorizontal_chainStyle">packed</item>
         <item name="layout_constraintVertical_chainStyle">packed</item>

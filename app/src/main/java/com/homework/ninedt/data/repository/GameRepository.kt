@@ -5,7 +5,8 @@ import com.homework.ninedt.data.api.Response
 import com.homework.ninedt.data.api.Status
 import com.homework.ninedt.data.database.GameDao
 import com.homework.ninedt.data.model.Game
-import com.homework.ninedt.data.model.RulesService
+import com.homework.ninedt.data.api.RulesService
+import com.homework.ninedt.data.model.GameStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -26,8 +27,10 @@ class GameRepository @Inject constructor(
 
     override fun getLastModifiedGameId(): Flow<Long?> = gameDao.getLastModifiedGameId()
 
-    override suspend fun createGame(): Long {
-        return gameDao.createNewGame(Game())
+    override suspend fun createGame(playerOneId: Long, playerTwoId: Long): Long {
+        return withContext(Dispatchers.IO) {
+            return@withContext gameDao.createNewGame(Game(playerOneId = playerOneId, playerTwoId = playerTwoId))
+        }
     }
 
     override suspend fun updateGame(game: Game): Int {
@@ -41,6 +44,7 @@ class GameRepository @Inject constructor(
             val response = rulesService.startGame(game, currentPlayerId)
 
             if (response.status == Status.SUCCESS) {
+                Log.i(TAG, "Starting game now $response.data")
                 updateGame(response.data!!)
             }
 
@@ -50,14 +54,26 @@ class GameRepository @Inject constructor(
 
     override suspend fun makeMove(columnDropped: Int, game: Game): Response<Game> {
         return withContext(Dispatchers.IO) {
-            val response = rulesService.makeMove(columnDropped, game)
+            var response = rulesService.makeMove(columnDropped, game)
             Log.i(TAG, "Response received after making move: $response")
 
+            // This is a little weird, but we're simulating additional trips to the server
+            // so that the user gets clear signals when it is their turn vs the computer
             if (response.status == Status.SUCCESS) {
-                updateGame(response.data!!)
+                response.data?.let {
+                    updateGame(it)
+
+                    if (it.status == GameStatus.INPROGRESS) {
+                        response = rulesService.getNextMove(game)
+
+                        if (response.status == Status.SUCCESS) {
+                            updateGame(response.data!!)
+                        }
+                    }
+                }
             }
 
-            return@withContext Response.success(response.data!!)
+            return@withContext response
         }
     }
 

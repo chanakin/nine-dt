@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 
-class BoardViewModel @ViewModelInject constructor(
+class GameViewModel @ViewModelInject constructor(
     application: Application,
     private val repository: GameRepository
 ) : AndroidViewModel(application) {
@@ -23,6 +23,11 @@ class BoardViewModel @ViewModelInject constructor(
         application.getString(R.string.shared_prefs_file_key),
         Context.MODE_PRIVATE
     ).getLong(application.getString(R.string.player_id), 1L)
+
+    private val computerPlayerId = application.getSharedPreferences(
+        application.getString(R.string.shared_prefs_file_key),
+        Context.MODE_PRIVATE
+    ).getLong(application.getString(R.string.computer_AI_player_id), 2L)
 
     private val _error = MutableLiveData<String?>()
 
@@ -46,15 +51,9 @@ class BoardViewModel @ViewModelInject constructor(
         }.distinctUntilChanged()
 
     private fun isMyTurn(currentGame: Game): Boolean {
-        currentGame.startingPlayerId?.let {
-            val secondPlayer =
-                currentGame.playerIds.find { playerId -> currentGame.startingPlayerId != playerId }!!
-            val currentPlayerId =
-                if (currentGame.moves.size % 2 == 0) currentGame.startingPlayerId else secondPlayer
-            return currentPlayerId == myPlayerId
-        }
-
-        return false
+        val currentPlayerId =
+            if (currentGame.moves.size % 2 == 0) currentGame.playerOneId else currentGame.playerTwoId
+        return currentPlayerId == myPlayerId
     }
 
     private fun handleResponse(response: Response<Game>) {
@@ -72,6 +71,12 @@ class BoardViewModel @ViewModelInject constructor(
                 val response = repository.changeStartingPlayer(it, startPlayer)
                 handleResponse(response)
             }
+        }
+    }
+
+    fun createNewGame() {
+        viewModelScope.launch {
+            repository.createGame(myPlayerId, computerPlayerId)
         }
     }
 

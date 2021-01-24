@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "ed4f2103549a3dbf2ac151fb9ff44d98",
+    "identityHash": "a67ca778412d13f3df18a3baf4fbcc3c",
     "entities": [
       {
         "tableName": "Game",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `moves` TEXT NOT NULL, `status` TEXT NOT NULL, `startingPlayerId` INTEGER, `playerIds` TEXT NOT NULL, `createdDate` INTEGER NOT NULL, `lastModified` INTEGER NOT NULL, `winningPlayerId` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `moves` TEXT NOT NULL, `status` TEXT NOT NULL, `playerOneId` INTEGER NOT NULL, `playerTwoId` INTEGER NOT NULL, `createdDate` INTEGER NOT NULL, `lastModified` INTEGER NOT NULL, `winningPlayerId` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -27,15 +27,15 @@
             "notNull": true
           },
           {
-            "fieldPath": "startingPlayerId",
-            "columnName": "startingPlayerId",
+            "fieldPath": "playerOneId",
+            "columnName": "playerOneId",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           },
           {
-            "fieldPath": "playerIds",
-            "columnName": "playerIds",
-            "affinity": "TEXT",
+            "fieldPath": "playerTwoId",
+            "columnName": "playerTwoId",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -70,7 +70,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ed4f2103549a3dbf2ac151fb9ff44d98')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a67ca778412d13f3df18a3baf4fbcc3c')"
     ]
   }
 }
