@@ -15,7 +15,8 @@ import javax.inject.Singleton
 
 // In MVVM architecture, having a repository standing between the ViewModel
 // and data retrieval methods allows the use of local storage as well as API calls,
-// allowing us to intelligently balance freshness of data with responsiveness of display
+// which in turn enables us to intelligently balance freshness of data
+// with responsiveness of display
 @Singleton
 class GameRepository @Inject constructor(
     private val gameDao: GameDao,
@@ -58,9 +59,10 @@ class GameRepository @Inject constructor(
         return withContext(Dispatchers.IO) {
             var response = rulesService.makeMove(columnDropped, game)
 
-            // This is a little weird, but we're simulating additional trips to the server
-            // so that the user gets clear signals when it is their turn vs the computer
             if (response.status == Status.SUCCESS) {
+                // This gets updates back to the user faster - responsive UI that shows
+                // their token drop quickly rather than waiting for the roundtrip to the service
+                // to return the next move made
                 response.data?.let {
                     updateGame(it)
 
@@ -88,11 +90,6 @@ class GameRepository @Inject constructor(
 
             return@withContext response
         }
-    }
-
-
-    companion object {
-        const val TAG = "GameRepository"
     }
 }
 

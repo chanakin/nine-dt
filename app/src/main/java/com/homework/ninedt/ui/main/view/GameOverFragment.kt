@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.homework.ninedt.R
+import com.homework.ninedt.data.model.GameStatus
 import com.homework.ninedt.databinding.GameOverFragmentBinding
 import com.homework.ninedt.ui.main.viewmodel.GameViewModel
 import nl.dionsegijn.konfetti.models.Shape
@@ -61,6 +62,14 @@ class GameOverFragment : Fragment() {
                 binding.resultsText.text = getString(R.string.everybody_loses)
             } else {
                 binding.resultsText.text = getString(R.string.lose_message)
+            }
+        }
+
+        viewModel.status.observe(viewLifecycleOwner) {
+            status ->
+            if (status != GameStatus.COMPLETED) {
+                // We've moved on. Stop throwing confetti!
+                binding.confettiView.reset()
             }
         }
 
